@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Doctor Dashboard</title>
+<style>
+body{font-family:Arial;margin:0;background:#eef3ff;padding:20px}
+#login{max-width:400px;margin:auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1)}
+#dashboard{display:none}
+table{width:100%;border-collapse:collapse;margin-top:20px;background:#fff}
+th,td{border:1px solid #ccc;padding:8px;text-align:left;font-size:14px}
+th{background:#0b74db;color:#fff}
+button{padding:6px 10px;margin:5px;border:none;border-radius:4px;cursor:pointer}
+.serve{background:#28a745;color:#fff}
+.reset{background:#dc3545;color:#fff}
+</style>
+</head>
+<body>
+<div id="login">
+<h2>Doctor Login</h2>
+<input type="password" id="pass" placeholder="Enter Password">
+<button id="loginBtn">Login</button>
+</div>
+
+<div id="dashboard">
+<h2>Doctor Dashboard / डॉक्टर डैशबोर्ड</h2>
+<button class="reset" id="resetBtn">Reset Tokens</button>
+<table>
+<thead>
+<tr><th>Token</th><th>Name / नाम</th><th>Mobile</th><th>Location / स्थान</th><th>Illness / रोग</th><th>Served?</th></tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
+  authDomain: "clinic-token-system-e1430.firebaseapp.com",
+  projectId: "clinic-token-system-e1430",
+  storageBucket: "clinic-token-system-e1430.firebasestorage.app",
+  messagingSenderId: "1014958043227",
+  appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);",
+  authDomain: "REPLACE_AUTH_DOMAIN",
+  databaseURL: "REPLACE_DATABASE_URL",
+  projectId: "REPLACE_PROJECT_ID",
+  storageBucket: "REPLACE_STORAGE_BUCKET",
+  messagingSenderId: "REPLACE_SENDER_ID",
+  appId: "REPLACE_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const login=document.getElementById('login');
+const dash=document.getElementById('dashboard');
+document.getElementById('loginBtn').onclick=function(){
+  if(document.getElementById('pass').value==="LHASCC"){
+    login.style.display='none';
+    dash.style.display='block';
+    loadData();
+  } else alert('Wrong password');
+};
+
+function loadData(){
+  const body=document.getElementById('tableBody');
+  db.ref('patients').on('value',snap=>{
+    body.innerHTML='';
+    snap.forEach(child=>{
+      const p=child.val();
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td>${p.token}</td><td>${p.name}</td><td>${p.mobile}</td><td>${p.location}</td><td>${p.illness}</td>
+      <td><button class='serve' onclick='markServed("${child.key}")'>✔</button></td>`;
+      body.appendChild(tr);
+    });
+  });
+}
+
+function markServed(id){ db.ref('patients/'+id+'/served').set(true); }
+document.getElementById('resetBtn').onclick=function(){
+  if(confirm('Reset all tokens?')){db.ref('currentToken').set(0); db.ref('patients').remove();}
+};
+</script>
+</body>
+</html>

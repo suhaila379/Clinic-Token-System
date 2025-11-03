@@ -1,68 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Patient Token System</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Clinic Token - Patient</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #eef3f8;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    h1 {
-      color: #333;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 15px 30px;
-      font-size: 18px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    #tokenDisplay {
-      margin-top: 30px;
-      font-size: 24px;
-      color: #222;
-      text-align: center;
-    }
-    footer {
-      position: absolute;
-      bottom: 20px;
-      font-size: 12px;
-      color: #888;
-    }
+    body{font-family:Arial, sans-serif;margin:0;background:#f5f8ff;display:flex;justify-content:center;align-items:center;min-height:100vh}
+    .card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1);width:90%;max-width:500px}
+    h1{text-align:center;color:#064789}
+    label{display:block;margin-top:10px;font-weight:bold}
+    input,textarea{width:100%;padding:8px;margin-top:4px;border:1px solid #ccc;border-radius:6px;font-size:15px}
+    button{margin-top:15px;width:100%;padding:10px;font-size:16px;background:#064789;color:#fff;border:none;border-radius:6px;cursor:pointer}
+    button:hover{background:#0b74db}
+    #tokenBox{margin-top:15px;padding:10px;background:#e8f4ff;border-radius:6px;text-align:center;font-weight:bold;color:#064789}
+    .bilingual{font-size:13px;color:#555}
   </style>
 </head>
 <body>
-  <h1>Get Your Patient Token</h1>
-  <button id="getToken">Get Token</button>
-  <div id="tokenDisplay"></div>
+  <div class="card">
+    <h1>Get Token / टोकन प्राप्त करें</h1>
+    <form id="patientForm">
+      <label>Name / नाम</label>
+      <input id="name" required placeholder="Enter full name / पूरा नाम दर्ज करें">
 
-  <footer>© 2025 Patient Token System</footer>
+      <label>Mobile Number / मोबाइल नंबर</label>
+      <input id="mobile" required placeholder="10-digit mobile number / 10 अंकों का मोबाइल नंबर">
 
+      <label>Location / स्थान</label>
+      <input id="location" required placeholder="Your area or city / आपका क्षेत्र या शहर">
+
+      <label>Illness Details / रोग का विवरण</label>
+      <textarea id="illness" required placeholder="Describe briefly / संक्षेप में विवरण दें"></textarea>
+
+      <button type="submit">Get Token / टोकन प्राप्त करें</button>
+    </form>
+    <div id="tokenBox" style="display:none"></div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script>
-    // Manage patient token count locally (per device)
-    let currentToken = localStorage.getItem("currentToken") || 0;
+    const firebaseConfig = {
+      apiKey: "// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-    document.getElementById("getToken").addEventListener("click", () => {
-      currentToken++;
-      localStorage.setItem("currentToken", currentToken);
-      document.getElementById("tokenDisplay").innerHTML = 
-        "Your Token Number: <b>" + currentToken + "</b>";
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
+  authDomain: "clinic-token-system-e1430.firebaseapp.com",
+  projectId: "clinic-token-system-e1430",
+  storageBucket: "clinic-token-system-e1430.firebasestorage.app",
+  messagingSenderId: "1014958043227",
+  appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);",
+      authDomain: "REPLACE_AUTH_DOMAIN",
+      databaseURL: "REPLACE_DATABASE_URL",
+      projectId: "REPLACE_PROJECT_ID",
+      storageBucket: "REPLACE_STORAGE_BUCKET",
+      messagingSenderId: "REPLACE_SENDER_ID",
+      appId: "REPLACE_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const form = document.getElementById('patientForm');
+    const tokenBox = document.getElementById('tokenBox');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = nameInput.value = document.getElementById('name').value.trim();
+      const mobile = document.getElementById('mobile').value.trim();
+      const location = document.getElementById('location').value.trim();
+      const illness = document.getElementById('illness').value.trim();
+      if(!name||!mobile||!location||!illness){alert('Please fill all fields');return;}
+      const currentTokenRef = db.ref('currentToken');
+      currentTokenRef.transaction(curr => (curr || 0) + 1, (err, committed, snap)=>{
+        if(err){alert('Error, try again');return;}
+        const token = snap.val();
+        db.ref('patients').push({name,mobile,location,illness,token,timestamp:new Date().toISOString(),served:false});
+        tokenBox.style.display='block';
+        tokenBox.textContent = 'Your Token Number / आपका टोकन नंबर: ' + token;
+        form.reset();
+      });
     });
   </script>
 </body>
