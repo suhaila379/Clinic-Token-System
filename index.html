@@ -1,39 +1,60 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lucknow Health And Skin Care Centre - Patient View</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lucknow Health & Skin Care Centre</title>
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-  <header class="header-glass">
-    <h1>Lucknow Health And Skin Care Centre</h1>
-  </header>
-  <aside class="sidebar">
-    <nav>
-      <a href="#" class="active">Dashboard</a>
-      <a href="doctor.html">Doctor Login</a>
-    </nav>
-  </aside>
-
-  <main class="main-content">
-    <section class="token-section">
-      <div class="token-row">
-        <div class="token-card current">Current Token<br><span>05</span></div>
-        <div class="token-card next">Next Token<br><span>06</span></div>
+  <div class="sidebar">
+    <h2>Lucknow Health & Skin Care Centre</h2>
+    <div>
+      <a href="index.html">Patient View</a>
+      <a href="doctor.html">Doctor Dashboard</a>
+    </div>
+  </div>
+  <div class="main">
+    <div class="header">
+      <h1>Patient Queue</h1>
+    </div>
+    <div class="token-cards">
+      <div class="card">
+        <h3>Current Token</h3>
+        <p id="currentToken">--</p>
       </div>
-
-      <div class="add-new-card">
-        <button class="add-btn">+ Add New Patient</button>
+      <div class="card">
+        <h3>Next Token</h3>
+        <p id="nextToken">--</p>
       </div>
-
-      <div class="token-row">
-        <div class="token-card remaining">Remaining Tokens<br><span>12</span></div>
+      <div class="card">
+        <h3>Remaining Tokens</h3>
+        <p id="remainingTokens">--</p>
       </div>
-    </section>
-  </main>
+    </div>
+  </div>
 
-  <script src="assets/js/app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
+  <script>
+    // Firebase Configuration (Replace with your config)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      databaseURL: "YOUR_DATABASE_URL",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Placeholder for live updates
+    document.getElementById('currentToken').innerText = "101";
+    document.getElementById('nextToken').innerText = "102";
+    document.getElementById('remainingTokens').innerText = "5";
+  </script>
 </body>
 </html>
