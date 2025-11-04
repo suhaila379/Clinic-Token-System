@@ -1,251 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Doctor Dashboard – Lucknow Health & Skin Care Centre</title>
-<link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doctor Dashboard - Lucknow Health & Skin Care Centre</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="module">
+    // 🔥 Import Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      push,
+      set,
+      onValue,
+      remove,
+      update
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    import {
+      getAuth,
+      signInWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    // 🔑 Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
+      authDomain: "clinic-token-system-e1430.firebaseapp.com",
+      databaseURL: "https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "clinic-token-system-e1430",
+      storageBucket: "clinic-token-system-e1430.firebasestorage.app",
+      messagingSenderId: "1014958043227",
+      appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    // Login Protection
+    window.onload = function () {
+      const email = "doctor@lhascc.com";
+      const password = "LHASCC";
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => console.log("Doctor logged in automatically"))
+        .catch((error) => console.error(error));
+    };
+
+    // Add Patient Modal
+    function openModal() {
+      document.getElementById("addPatientModal").style.display = "flex";
+    }
+    function closeModal() {
+      document.getElementById("addPatientModal").style.display = "none";
+    }
+
+    // Add New Patient
+    window.addPatient = function () {
+      const name = document.getElementById("name").value.trim();
+      const age = document.getElementById("age").value.trim();
+      const mobile = document.getElementById("mobile").value.trim();
+      const address = document.getElementById("address").value.trim();
+      const illness = document.getElementById("illness").value.trim();
+
+      if (!name || !mobile) {
+        alert("Please enter patient name and mobile number.");
+        return;
+      }
+
+      const patientsRef = ref(db, "patients");
+      const newPatientRef = push(patientsRef);
+
+      const patientData = {
+        id: newPatientRef.key.slice(-5),
+        name,
+        age,
+        mobile,
+        address,
+        illness,
+        token: Date.now().toString().slice(-4),
+        time: new Date().toISOString(),
+      };
+
+      set(newPatientRef, patientData);
+      closeModal();
+    };
+
+    // Display Patients
+    const tableBody = document.getElementById("patientTableBody");
+    const patientsRef = ref(db, "patients");
+
+    onValue(patientsRef, (snapshot) => {
+      tableBody.innerHTML = "";
+      snapshot.forEach((child) => {
+        const p = child.val();
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${p.id || "-"}</td>
+          <td>${p.token || "-"}</td>
+          <td>${p.name || "-"}</td>
+          <td>${p.age || "-"}</td>
+          <td>${p.mobile || "-"}</td>
+          <td>${p.address || "-"}</td>
+          <td>${p.illness || "-"}</td>
+          <td>${p.time ? new Date(p.time).toLocaleString() : "-"}</td>
+          <td>
+            <button class="edit-btn" onclick="editPatient('${child.key}')">✏️</button>
+            <button class="delete-btn" onclick="deletePatient('${child.key}')">🗑️</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    });
+
+    // Edit Patient
+    window.editPatient = function (id) {
+      const newIllness = prompt("Update Illness / Description:");
+      if (!newIllness) return;
+      const patientRef = ref(db, `patients/${id}`);
+      update(patientRef, { illness: newIllness });
+    };
+
+    // Delete Patient
+    window.deletePatient = function (id) {
+      if (confirm("Are you sure you want to delete this patient?")) {
+        const patientRef = ref(db, `patients/${id}`);
+        remove(patientRef);
+      }
+    };
+
+    // Export CSV
+    window.exportCSV = function () {
+      let csv = "Patient ID,Token,Name,Age,Mobile,Address,Illness,Time\n";
+      document.querySelectorAll("#patientTableBody tr").forEach((row) => {
+        const cols = row.querySelectorAll("td");
+        const data = Array.from(cols).map((td) => td.textContent);
+        csv += data.join(",") + "\n";
+      });
+      const blob = new Blob([csv], { type: "text/csv" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "patients.csv";
+      link.click();
+    };
+  </script>
 </head>
-<body class="doctor-body">
-<div class="container">
+
+<body>
   <h1 class="clinic-title">Lucknow Health & Skin Care Centre</h1>
   <h2 class="subtitle">Doctor Dashboard</h2>
 
-  <!-- LOGIN SECTION -->
-  <div id="loginCard" class="form-card">
-    <h3>Doctor Login</h3>
-    <input id="loginEmail" placeholder="Email" type="email" />
-    <input id="loginPassword" placeholder="Password" type="password" />
-    <button id="loginBtn">Login</button>
-    <p id="loginMsg" style="color:red;"></p>
+  <div class="token-display">
+    <div class="glass-card">
+      <h3>Current Token</h3>
+      <p id="currentToken">--</p>
+    </div>
+    <div class="glass-card">
+      <h3>Next Token</h3>
+      <p id="nextToken">--</p>
+    </div>
+    <div class="glass-card">
+      <h3>Remaining</h3>
+      <p id="remainingToken">--</p>
+    </div>
   </div>
 
-  <!-- DASHBOARD SECTION -->
-  <div id="dashboard" style="display:none;">
-    <div class="token-display">
-      <div class="glass-card">
-        <h3>Current Token</h3>
-        <p id="currentToken">--</p>
-      </div>
-      <div class="glass-card">
-        <h3>Next Token</h3>
-        <p id="nextToken">--</p>
-      </div>
-      <div class="glass-card">
-        <h3>Remaining</h3>
-        <p id="remainingToken">--</p>
-      </div>
-    </div>
+  <button class="add-patient-btn" onclick="openModal()">➕ Add Patient</button>
 
-    <!-- ADD PATIENT FORM -->
-    <div class="form-card">
+  <!-- Add Patient Modal -->
+  <div id="addPatientModal" class="modal">
+    <div class="modal-content glass-card">
+      <span class="close-btn" onclick="closeModal()">✖</span>
       <h3>Add New Patient</h3>
-      <input id="pName" placeholder="Patient Name" />
-      <input id="pAge" placeholder="Age" type="number" />
-      <input id="pMobile" placeholder="Mobile Number" />
-      <input id="pAddress" placeholder="Address" />
-      <textarea id="pIllness" placeholder="Illness / Description"></textarea>
-      <button id="addBtn">Add Patient</button>
-    </div>
-
-    <!-- SEARCH AND EXPORT -->
-    <div style="margin:20px 0;">
-      <input id="searchBox" placeholder="Search patient..." style="padding:8px;width:70%;border-radius:8px;border:1px solid #ccc;">
-      <button id="exportBtn">Export CSV</button>
-    </div>
-
-    <!-- PATIENT TABLE -->
-    <div class="table-container">
-      <table id="patientTable">
-        <thead>
-          <tr>
-            <th>Patient ID</th>
-            <th>Token</th>
-            <th>Name</th>
-            <th>Age</th>
-            <th>Mobile</th>
-            <th>Address</th>
-            <th>Illness</th>
-            <th>Time</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <input type="text" id="name" placeholder="Patient Name" />
+      <input type="number" id="age" placeholder="Age" />
+      <input type="text" id="mobile" placeholder="Mobile Number" />
+      <input type="text" id="address" placeholder="Address" />
+      <textarea id="illness" placeholder="Illness / Description"></textarea>
+      <button onclick="addPatient()">Add Patient</button>
     </div>
   </div>
-</div>
 
-<footer class="footer">© 2025 Lucknow Health & Skin Care Centre</footer>
+  <div class="table-container">
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search patient..."
+      onkeyup="searchPatient()"
+      style="margin-bottom: 10px; padding: 8px; border-radius: 8px; width: 60%;"
+    />
+    <button onclick="exportCSV()" class="add-patient-btn" style="padding: 10px 20px;">Export CSV</button>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDatabase, ref, set, onValue, remove, update, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    <table>
+      <thead>
+        <tr>
+          <th>Patient ID</th>
+          <th>Token</th>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Mobile</th>
+          <th>Address</th>
+          <th>Illness</th>
+          <th>Time</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="patientTableBody"></tbody>
+    </table>
+  </div>
 
-// Firebase config
-const app = initializeApp({
-  apiKey: "AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
-  authDomain: "clinic-token-system-e1430.firebaseapp.com",
-  databaseURL: "https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "clinic-token-system-e1430",
-  storageBucket: "clinic-token-system-e1430.firebasestorage.app",
-  messagingSenderId: "1014958043227",
-  appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
-});
+  <script>
+    function searchPatient() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      document.querySelectorAll("#patientTableBody tr").forEach((row) => {
+        const match = row.textContent.toLowerCase().includes(input);
+        row.style.display = match ? "" : "none";
+      });
+    }
+  </script>
 
-const db = getDatabase(app);
-const auth = getAuth(app);
-
-const loginCard = document.getElementById("loginCard");
-const dashboard = document.getElementById("dashboard");
-const loginBtn = document.getElementById("loginBtn");
-const loginMsg = document.getElementById("loginMsg");
-
-loginBtn.onclick = () => {
-  const email = loginEmail.value;
-  const pass = loginPassword.value;
-  signInWithEmailAndPassword(auth, email, pass)
-    .then(() => {
-      loginCard.style.display = "none";
-      dashboard.style.display = "block";
-    })
-    .catch(() => (loginMsg.textContent = "Invalid credentials"));
-};
-
-// --- Token Cards ---
-onValue(ref(db, "tokens/current"), s => document.getElementById("currentToken").textContent = s.val() || "--");
-onValue(ref(db, "tokens/next"), s => document.getElementById("nextToken").textContent = s.val() || "--");
-onValue(ref(db, "tokens/remaining"), s => document.getElementById("remainingToken").textContent = s.val() || "--");
-
-// --- Add New Patient ---
-document.getElementById("addBtn").onclick = async () => {
-  const name = pName.value.trim();
-  if (!name) return alert("Please enter patient name.");
-
-  const snap = await get(child(ref(db), "patients"));
-  const all = snap.val() || {};
-  const last = Object.keys(all).length ? Object.keys(all)[Object.keys(all).length - 1] : "P000";
-  const num = parseInt(last.replace("P", "")) + 1;
-  const patientId = "P" + String(num).padStart(3, "0");
-  const token = "T" + String(num).padStart(3, "0");
-
-  const data = {
-    patientId, token, name,
-    age: pAge.value, mobile: pMobile.value,
-    address: pAddress.value, illness: pIllness.value,
-    timestamp: new Date().toLocaleString()
-  };
-
-  await set(ref(db, "patients/" + patientId), data);
-  await set(ref(db, "tokens/current"), token);
-  await set(ref(db, "tokens/next"), "T" + String(num + 1).padStart(3, "0"));
-  await set(ref(db, "tokens/remaining"), Object.keys(all).length + 1);
-
-  pName.value = pAge.value = pMobile.value = pAddress.value = pIllness.value = "";
-};
-
-// --- Load and Render Patients ---
-const tableBody = document.querySelector("#patientTable tbody");
-onValue(ref(db, "patients"), (snapshot) => {
-  const patients = snapshot.val() || {};
-  tableBody.innerHTML = "";
-
-  Object.values(patients).forEach((p) => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${p.patientId}</td>
-      <td>${p.token}</td>
-      <td contenteditable="false">${p.name || ""}</td>
-      <td contenteditable="false">${p.age || ""}</td>
-      <td contenteditable="false">${p.mobile || ""}</td>
-      <td contenteditable="false">${p.address || ""}</td>
-      <td contenteditable="false">${p.illness || ""}</td>
-      <td>${p.timestamp || ""}</td>
-      <td>
-        <button class="edit-btn">✏️</button>
-        <button class="save-btn" style="display:none;">💾</button>
-        <button class="cancel-btn" style="display:none;">❌</button>
-        <button class="delete-btn">🗑️</button>
-      </td>
-    `;
-    tableBody.appendChild(row);
-
-    const editBtn = row.querySelector(".edit-btn");
-    const saveBtn = row.querySelector(".save-btn");
-    const cancelBtn = row.querySelector(".cancel-btn");
-    const deleteBtn = row.querySelector(".delete-btn");
-
-    const editableCells = row.querySelectorAll("td[contenteditable]");
-
-    editBtn.onclick = () => {
-      editableCells.forEach(c => c.contentEditable = true);
-      editBtn.style.display = "none";
-      saveBtn.style.display = cancelBtn.style.display = "inline-block";
-    };
-
-    cancelBtn.onclick = () => {
-      editableCells.forEach(c => c.contentEditable = false);
-      editBtn.style.display = "inline-block";
-      saveBtn.style.display = cancelBtn.style.display = "none";
-      onValue(ref(db, "patients/" + p.patientId), s => {
-        const d = s.val();
-        if (d) {
-          editableCells[0].textContent = d.name;
-          editableCells[1].textContent = d.age;
-          editableCells[2].textContent = d.mobile;
-          editableCells[3].textContent = d.address;
-          editableCells[4].textContent = d.illness;
-        }
-      }, { onlyOnce: true });
-    };
-
-    saveBtn.onclick = async () => {
-      const updated = {
-        name: editableCells[0].textContent,
-        age: editableCells[1].textContent,
-        mobile: editableCells[2].textContent,
-        address: editableCells[3].textContent,
-        illness: editableCells[4].textContent,
-      };
-      await update(ref(db, "patients/" + p.patientId), updated);
-      editableCells.forEach(c => c.contentEditable = false);
-      editBtn.style.display = "inline-block";
-      saveBtn.style.display = cancelBtn.style.display = "none";
-      alert("Patient details updated successfully.");
-    };
-
-    deleteBtn.onclick = () => {
-      if (confirm("Are you sure you want to delete this patient?")) {
-        remove(ref(db, "patients/" + p.patientId));
-      }
-    };
-  });
-});
-
-// --- Search Filter ---
-document.getElementById("searchBox").addEventListener("input", function() {
-  const q = this.value.toLowerCase();
-  Array.from(tableBody.children).forEach(row => {
-    const match = Array.from(row.children).some(td => td.textContent.toLowerCase().includes(q));
-    row.style.display = match ? "" : "none";
-  });
-});
-
-// --- Export CSV ---
-document.getElementById("exportBtn").onclick = () => {
-  const rows = [["Patient ID","Token","Name","Age","Mobile","Address","Illness","Time"]];
-  tableBody.querySelectorAll("tr").forEach(tr => {
-    const cells = Array.from(tr.querySelectorAll("td")).slice(0,8).map(td => td.textContent);
-    rows.push(cells);
-  });
-  const csv = rows.map(r => r.join(",")).join("\n");
-  const blob = new Blob([csv], {type:"text/csv"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "patients.csv";
-  a.click();
-};
-</script>
+  <footer style="margin: 20px 0; color: #333; font-size: 14px;">
+    © 2025 Lucknow Health & Skin Care Centre
+  </footer>
 </body>
 </html>
