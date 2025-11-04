@@ -1,113 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Lucknow Health & Skin Care Centre – Patient Token</title>
-<link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Token - Lucknow Health & Skin Care Centre</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e3f2fd, #ffffff);
+      color: #0a2540;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .clinic-title {
+      margin-top: 20px;
+      font-size: 1.8em;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .form-card {
+      backdrop-filter: blur(15px);
+      background: rgba(255,255,255,0.3);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: 18px;
+      box-shadow: 0 4px 15px rgba(0,153,255,0.2), inset 0 0 20px rgba(255,255,255,0.1);
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+    }
+    .form-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 25px rgba(0,153,255,0.3), inset 0 0 25px rgba(255,255,255,0.15);
+    }
+    input, textarea {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 10px;
+      font-size: 1em;
+      outline: none;
+    }
+    button {
+      background: rgba(255,255,255,0.25);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.5);
+      padding: 12px 25px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 1em;
+      color: #0a2540;
+      box-shadow: 0 4px 12px rgba(0,153,255,0.2);
+      transition: 0.3s;
+    }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0,153,255,0.35);
+    }
+    .token-display {
+      margin-top: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
+    .glass-card {
+      backdrop-filter: blur(15px);
+      background: rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 18px;
+      box-shadow: 0 4px 15px rgba(0, 153, 255, 0.2), inset 0 0 20px rgba(255,255,255,0.1);
+      padding: 15px 25px;
+      width: 180px;
+      transition: all 0.3s ease;
+    }
+    .glass-card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 25px rgba(0,153,255,0.3), inset 0 0 25px rgba(255,255,255,0.15);
+    }
+    .glass-card h3 { margin: 0; font-size: 1em; font-weight: 600; }
+    .glass-card p { font-size: 1.4em; margin: 5px 0 0; font-weight: 500; }
+    footer { margin: 25px; color: #333; font-size: 13px; }
+  </style>
 </head>
-<body class="patient-body">
-<div class="container">
+<body>
   <h1 class="clinic-title">Lucknow Health & Skin Care Centre</h1>
-  <h2 class="subtitle">Get Your Token / अपना टोकन प्राप्त करें</h2>
 
-  <div class="form-card">
-    <label>Patient Name / मरीज का नाम</label>
-    <input id="pName" placeholder="Enter patient name / मरीज का नाम दर्ज करें" required />
-
-    <label>Age / उम्र</label>
-    <input id="pAge" placeholder="Age / उम्र" type="number" />
-
-    <label>Mobile Number / मोबाइल नंबर</label>
-    <input id="pMobile" placeholder="Enter mobile number / मोबाइल नंबर दर्ज करें" type="tel" />
-
-    <label>Address / पता</label>
-    <input id="pAddress" placeholder="Enter address / पता दर्ज करें" />
-
-    <label>Illness / बीमारी का विवरण</label>
-    <textarea id="pIllness" placeholder="Describe illness / बीमारी का विवरण दें"></textarea>
-
-    <button id="generateBtn">Generate Token / टोकन बनाएं</button>
+  <!-- Patient Form -->
+  <div class="form-card" id="formCard">
+    <h2>Get Your Token / अपना टोकन प्राप्त करें</h2>
+    <input id="name" placeholder="Name / नाम" required>
+    <input id="age" type="number" placeholder="Age / उम्र" required>
+    <input id="mobile" placeholder="Mobile / मोबाइल" required>
+    <input id="address" placeholder="Address / पता" required>
+    <textarea id="illness" placeholder="Illness / बीमारी" required></textarea>
+    <button onclick="getToken()">Get Token</button>
   </div>
 
-  <div class="token-display" id="tokenDisplay" style="display:none;">
-    <div class="token-card glass-card">
-      <h3>Your Token Number / आपका टोकन नंबर</h3>
-      <p id="patientToken">--</p>
+  <!-- Token Display -->
+  <div class="token-display" id="tokenSection" style="display:none;">
+    <div class="glass-card">
+      <h3>Your Token / आपका टोकन</h3>
+      <p id="yourToken">--</p>
     </div>
-    <div class="token-card glass-card">
-      <h3>Currently Serving / वर्तमान सेवा टोकन</h3>
+    <div class="glass-card">
+      <h3>Current Serving / वर्तमान टोकन</h3>
       <p id="currentToken">--</p>
     </div>
   </div>
 
-  <button class="doctor-login-btn" onclick="window.location.href='doctor.html'">
-    👨‍⚕️ Doctor Login / डॉक्टर लॉगिन
-  </button>
-</div>
+  <footer>© 2025 Lucknow Health & Skin Care Centre</footer>
 
-<footer class="footer">© 2025 Lucknow Health & Skin Care Centre</footer>
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, set, onValue, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
+      authDomain: "clinic-token-system-e1430.firebaseapp.com",
+      databaseURL: "https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "clinic-token-system-e1430",
+      storageBucket: "clinic-token-system-e1430.firebasestorage.app",
+      messagingSenderId: "1014958043227",
+      appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
+    };
 
-// Firebase config
-const app = initializeApp({
-  apiKey: "AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
-  authDomain: "clinic-token-system-e1430.firebaseapp.com",
-  databaseURL: "https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "clinic-token-system-e1430",
-  storageBucket: "clinic-token-system-e1430.firebasestorage.app",
-  messagingSenderId: "1014958043227",
-  appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
-});
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-const db = getDatabase(app);
+    // Live update for current serving token
+    onValue(ref(db, "tokens/current"), snap => {
+      document.getElementById("currentToken").textContent = snap.val() || "--";
+    });
 
-const patientToken = document.getElementById("patientToken");
-const currentToken = document.getElementById("currentToken");
-const tokenDisplay = document.getElementById("tokenDisplay");
-const generateBtn = document.getElementById("generateBtn");
+    // Generate new token
+    window.getToken = async () => {
+      const name = name.value.trim();
+      const age = age.value.trim();
+      const mobile = mobile.value.trim();
+      const address = address.value.trim();
+      const illness = illness.value.trim();
+      if (!name || !mobile) {
+        alert("Please fill all required fields / कृपया सभी आवश्यक विवरण भरें");
+        return;
+      }
 
-onValue(ref(db, "tokens/current"), (snapshot) => {
-  const val = snapshot.val();
-  currentToken.textContent = val ? val : "--";
-});
+      const snap = await get(ref(db, "patients"));
+      const data = snap.val() || {};
+      const newId = Object.keys(data).length + 1;
+      const token = newId;
+      const info = {
+        id: newId,
+        token,
+        name,
+        age,
+        mobile,
+        address,
+        illness,
+        time: new Date().toLocaleString()
+      };
+      await set(ref(db, "patients/" + newId), info);
+      await set(ref(db, "tokens/next"), token + 1);
+      await set(ref(db, "tokens/remaining"), Object.keys(data).length + 1);
+      await set(ref(db, "tokens/current"), token);
 
-generateBtn.onclick = async () => {
-  const name = pName.value.trim();
-  if (!name) {
-    alert("Please enter patient name / कृपया मरीज का नाम दर्ज करें");
-    return;
-  }
-  const snap = await get(child(ref(db), "patients"));
-  const all = snap.val() || {};
-  const last = Object.keys(all).length ? Object.keys(all)[Object.keys(all).length - 1] : "P000";
-  const num = parseInt(last.replace("P", "")) + 1;
-  const patientId = "P" + String(num).padStart(3, "0");
-  const token = "T" + String(num).padStart(3, "0");
-  const data = {
-    patientId,
-    token,
-    name,
-    age: pAge.value,
-    mobile: pMobile.value,
-    address: pAddress.value,
-    illness: pIllness.value,
-    timestamp: new Date().toLocaleString(),
-  };
-
-  await set(ref(db, "patients/" + patientId), data);
-  await set(ref(db, "tokens/current"), token);
-  await set(ref(db, "tokens/next"), "T" + String(num + 1).padStart(3, "0"));
-  await set(ref(db, "tokens/remaining"), Object.keys(all).length + 1);
-
-  tokenDisplay.style.display = "flex";
-  patientToken.textContent = token;
-
-  pName.value = pAge.value = pMobile.value = pAddress.value = pIllness.value = "";
-};
-</script>
+      document.getElementById("formCard").style.display = "none";
+      document.getElementById("tokenSection").style.display = "flex";
+      document.getElementById("yourToken").textContent = token;
+    };
+  </script>
 </body>
 </html>
