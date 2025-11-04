@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Lucknow Health And Skin Care Centre — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body{font-family:Poppins,Arial,Helvetica,sans-serif;background:#f7fbfb;margin:0;padding:16px}
+.wrap{max-width:1100px;margin:0 auto}
+.header{background:#fff;padding:12px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.04);display:flex;justify-content:space-between;align-items:center}
+.header h1{margin:0;color:#00796b;font-size:18px}
+.controls{display:flex;gap:8px;align-items:center}
+input.search{padding:8px;border-radius:8px;border:1px solid #e6eef0}
+button.primary{background:#009688;color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+.panel{margin-top:12px;background:#fff;padding:12px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.04)}
+.current{font-size:22px;font-weight:700;color:#00796b;text-align:center;padding:8px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:8px;border-bottom:1px solid #eef2f7;text-align:left}
+th{background:#00796b;color:#fff;font-weight:600}
+.served{background:#f1fff4}
+.exportBtn{background:#00796b;color:#fff;padding:8px 10px;border-radius:8px;border:0;cursor:pointer}
+@media(max-width:900px){.controls{flex-direction:column;align-items:stretch}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>Lucknow Health And Skin Care Centre — Doctor Dashboard</h1>
+    <div class="controls">
+      <input id="filter" class="search" placeholder="Filter by name or mobile • नाम या मोबाइल से खोजें">
+      <button id="refresh" class="primary">Refresh</button>
+      <button id="logout">Logout</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="current">Current Token / वर्तमान टोकन: <span id="currentToken">0</span></div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
+      <button id="reset" class="primary" style="background:#e53935">Reset Token Counter</button>
+      <button id="export" class="exportBtn">Download CSV</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div style="font-size:14px;color:#444">All patients (latest first) / सभी मरीज (नवीनतम पहले)</div>
+    <table aria-live="polite">
+      <thead><tr><th>Token</th><th>Name / नाम</th><th>Mobile</th><th>Location / स्थान</th><th>Illness / रोग</th><th>Time</th><th>Action</th></tr></thead>
+      <tbody id="list"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Firebase (compat) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+if(localStorage.getItem('clinic_doctor_logged')!=='1'){ window.location.href='doctor.html'; }
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCJUsNHqGbiZpINDTLalEDxU-pO5mZbeLU",
+  authDomain: "clinic-token-system-e1430.firebaseapp.com",
+  databaseURL: "https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "clinic-token-system-e1430",
+  storageBucket: "clinic-token-system-e1430.appspot.com",
+  messagingSenderId: "1014958043227",
+  appId: "1:1014958043227:web:c5a33675ddf765722f47e"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const listEl = document.getElementById('list');
+const currentTokenEl = document.getElementById('currentToken');
+const filter = document.getElementById('filter');
+const refresh = document.getElementById('refresh');
+const resetBtn = document.getElementById('reset');
+const exportBtn = document.getElementById('export');
+const logoutBtn = document.getElementById('logout');
+
+function escapeHtml(s){ return (s||'').toString().replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+// Live updates: current token and patients
+db.ref('currentToken').on('value', snap => { currentTokenEl.textContent = snap.val() || 0; });
+db.ref('patients').on('value', snap => { const data = snap.val() || {}; render(Object.keys(data).map(k=>({id:k,...data[k]}))); });
+
+// render function
+function render(arr){
+  // sort desc by token
+  arr.sort((a,b)=>b.token - a.token);
+  const q = (filter.value||'').toLowerCase().trim();
+  listEl.innerHTML='';
+  for(const p of arr){
+    if(q && !( (p.name||'').toLowerCase().includes(q) || (p.mobile||'').includes(q) )) continue;
+    const tr = document.createElement('tr');
+    if(p.served) tr.classList.add('served');
+    const time = p.timestamp ? new Date(p.timestamp).toLocaleString() : '-';
+    tr.innerHTML = `<td style="font-weight:700">${p.token}</td><td>${escapeHtml(p.name)}</td><td>${escapeHtml(p.mobile)}</td><td>${escapeHtml(p.location)}</td><td>${escapeHtml(p.illness)}</td><td style="white-space:nowrap">${time}</td><td><button data-id="${p.id}" class="toggle">${p.served? 'Unserve' : 'Mark Served'}</button></td>`;
+    listEl.appendChild(tr);
+  }
+  // attach actions
+  document.querySelectorAll('.toggle').forEach(btn=>btn.addEventListener('click', function(){
+    const id=this.dataset.id; db.ref('patients/'+id+'/served').transaction(curr=>!curr);
+  }));
+}
+
+// Auto-refresh every 5 seconds (ensures UI updates if realtime missed)
+setInterval(()=>{ db.ref('patients').once('value').then(s=>render(Object.keys(s.val()||{}).map(k=>({id:k,...s.val()[k]})))); }, 5000);
+
+refresh.addEventListener('click', ()=>{ alert('Refreshed'); });
+resetBtn.addEventListener('click', ()=>{ if(confirm('Reset token counter to 0? This will not delete patient history.')) db.ref('currentToken').set(0); });
+logoutBtn.addEventListener('click', ()=>{ localStorage.removeItem('clinic_doctor_logged'); window.location.href='doctor.html'; });
+
+// Export CSV
+exportBtn.addEventListener('click', async ()=>{
+  const snap = await db.ref('patients').once('value'); const data = snap.val() || {};
+  const rows = [['Token','Name','Mobile','Location','Illness','Timestamp']];
+  Object.keys(data).forEach(k=>{ const p=data[k]; rows.push([p.token,p.name,p.mobile,p.location,p.illness,p.timestamp]); });
+  const csv = rows.map(r=>r.map(cell=>`"${(cell||'').toString().replace(/"/g,'""') }"`).join(',')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv'}); const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='patients.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+
+// search filter auto-updates via realtime snapshots already
+</script>
+</body>
+</html>

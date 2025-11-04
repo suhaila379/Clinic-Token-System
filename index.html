@@ -1,93 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Clinic Token - Patient</title>
-  <style>
-    body{font-family:Arial, sans-serif;margin:0;background:#f5f8ff;display:flex;justify-content:center;align-items:center;min-height:100vh}
-    .card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1);width:90%;max-width:500px}
-    h1{text-align:center;color:#064789}
-    label{display:block;margin-top:10px;font-weight:bold}
-    input,textarea{width:100%;padding:8px;margin-top:4px;border:1px solid #ccc;border-radius:6px;font-size:15px}
-    button{margin-top:15px;width:100%;padding:10px;font-size:16px;background:#064789;color:#fff;border:none;border-radius:6px;cursor:pointer}
-    button:hover{background:#0b74db}
-    #tokenBox{margin-top:15px;padding:10px;background:#e8f4ff;border-radius:6px;text-align:center;font-weight:bold;color:#064789}
-    .bilingual{font-size:13px;color:#555}
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Lucknow Health And Skin Care Centre — Patient</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#009688;--accent-dark:#00796b;--bg:#f7fbfb;--card:#ffffff}
+body{font-family:Poppins,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;padding:18px}
+.header{max-width:900px;margin:0 auto 14px;display:flex;align-items:center;gap:12px;justify-content:center}
+.brand{background:var(--card);padding:12px 18px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.06);text-align:center;width:100%}
+.brand h1{margin:0;font-size:18px;color:var(--accent-dark);font-weight:600}
+.brand p{margin:4px 0 0;color:#556;font-size:13px}
+.container{max-width:900px;margin:0 auto;background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 20px rgba(0,0,0,0.04)}
+h2{margin:0 0 8px;color:var(--accent-dark)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:block;font-size:14px;color:#223;margin-bottom:6px;font-weight:600}
+.bilingual{display:block;font-size:12px;color:#556;margin-top:4px;font-weight:400}
+input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef0;font-size:14px;box-sizing:border-box}
+textarea{min-height:80px;resize:vertical}
+.btn{background:var(--accent);color:#fff;border:0;padding:12px;border-radius:8px;font-size:16px;cursor:pointer;width:100%}
+.btn.secondary{background:#e8fdf7;color:var(--accent);border:1px solid #cfeee6;color:var(--accent-dark)}
+#tokenBox{margin-top:14px;padding:12px;border-radius:8px;background:#eaf7f6;border:1px solid #d6f0ee;font-weight:700;color:var(--accent-dark);text-align:center}
+.footer{font-size:12px;color:#678;text-align:center;margin-top:12px}
+@media(max-width:700px){.form-row{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-  <div class="card">
-    <h1>Get Token / टोकन प्राप्त करें</h1>
-    <form id="patientForm">
-      <label>Name / नाम</label>
-      <input id="name" required placeholder="Enter full name / पूरा नाम दर्ज करें">
-
-      <label>Mobile Number / मोबाइल नंबर</label>
-      <input id="mobile" required placeholder="10-digit mobile number / 10 अंकों का मोबाइल नंबर">
-
-      <label>Location / स्थान</label>
-      <input id="location" required placeholder="Your area or city / आपका क्षेत्र या शहर">
-
-      <label>Illness Details / रोग का विवरण</label>
-      <textarea id="illness" required placeholder="Describe briefly / संक्षेप में विवरण दें"></textarea>
-
-      <button type="submit">Get Token / टोकन प्राप्त करें</button>
-    </form>
-    <div id="tokenBox" style="display:none"></div>
+  <div class="header">
+    <div class="brand">
+      <h1>Lucknow Health And Skin Care Centre</h1>
+      <p>Clinic Token Management System</p>
+    </div>
   </div>
 
+  <div class="container" role="main">
+    <h2>Get Your Token / टोकन प्राप्त करें</h2>
+    <p class="bilingual">Fill form and tap Get Token • फॉर्म भरें और Get Token दबाएँ</p>
+
+    <form id="patientForm" autocomplete="off">
+      <label for="name">Name / नाम <span class="bilingual">Enter full name • पूरा नाम लिखें</span></label>
+      <input id="name" type="text" required placeholder="e.g. Rajesh Kumar">
+
+      <div class="form-row">
+        <div>
+          <label for="mobile">Mobile Number / मोबाइल नंबर <span class="bilingual">10-digit number • 10 अंकों का नंबर</span></label>
+          <input id="mobile" type="tel" required placeholder="9876543210">
+        </div>
+        <div>
+          <label for="location">Location / स्थान <span class="bilingual">Area or city • इलाका या शहर</span></label>
+          <input id="location" type="text" required placeholder="e.g. Lucknow">
+        </div>
+      </div>
+
+      <label for="illness">Illness Details / रोग का विवरण <span class="bilingual">Brief description • संक्षेप में विवरण</span></label>
+      <textarea id="illness" placeholder="e.g. fever, cough"></textarea>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <button class="btn" type="submit">Get Token / टोकन लें</button>
+        <button type="button" class="btn secondary" id="doctorBtn">Doctor View / डॉक्टर पेज</button>
+      </div>
+    </form>
+
+    <div id="tokenBox" style="display:none" aria-live="polite"></div>
+    <div class="footer">Lucknow Health And Skin Care Centre — लखनऊ हेल्थ एंड स्किन केयर सेंटर</div>
+  </div>
+
+  <!-- Firebase (compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <script>
+    // Firebase config (your DB URL used)
     const firebaseConfig = {
-      apiKey: "// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
-  authDomain: "clinic-token-system-e1430.firebaseapp.com",
-  projectId: "clinic-token-system-e1430",
-  storageBucket: "clinic-token-system-e1430.firebasestorage.app",
-  messagingSenderId: "1014958043227",
-  appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);",
-      authDomain: "REPLACE_AUTH_DOMAIN",
-      databaseURL: "REPLACE_DATABASE_URL",
-      projectId: "REPLACE_PROJECT_ID",
-      storageBucket: "REPLACE_STORAGE_BUCKET",
-      messagingSenderId: "REPLACE_SENDER_ID",
-      appId: "REPLACE_APP_ID"
+      apiKey: "AIzaSyCJUsNHqGbiZpINDTLalEDxU-pO5mZbeLU",
+      authDomain: "clinic-token-system-e1430.firebaseapp.com",
+      databaseURL: "https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app/",
+      projectId: "clinic-token-system-e1430",
+      storageBucket: "clinic-token-system-e1430.appspot.com",
+      messagingSenderId: "1014958043227",
+      appId: "1:1014958043227:web:c5a33675ddf765722f47e"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // helpers
+    function validMobile(v){ return /^\d{10}$/.test(v.trim()); }
     const form = document.getElementById('patientForm');
     const tokenBox = document.getElementById('tokenBox');
+    const doctorBtn = document.getElementById('doctorBtn');
 
-    form.addEventListener('submit', e => {
+    function showToken(token){
+      tokenBox.style.display='block';
+      tokenBox.innerHTML = '<div>Your Token / आपका टोकन नंबर</div><div style="font-size:28px;margin-top:6px;">' + token + '</div><div style="font-size:12px;margin-top:6px;color:#444">Save this screen or note the token • इस स्क्रीन को सहेजें या टोकन नोट कर लें</div>';
+      tokenBox.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+
+    form.addEventListener('submit', function(e){
       e.preventDefault();
-      const name = nameInput.value = document.getElementById('name').value.trim();
+      const name = document.getElementById('name').value.trim();
       const mobile = document.getElementById('mobile').value.trim();
       const location = document.getElementById('location').value.trim();
       const illness = document.getElementById('illness').value.trim();
-      if(!name||!mobile||!location||!illness){alert('Please fill all fields');return;}
+
+      if(!name){ alert('Please enter name / कृपया नाम दर्ज करें'); return; }
+      if(!validMobile(mobile)){ alert('Enter valid 10-digit mobile number / 10 अंकों का सही नंबर डालें'); return; }
+      if(!location){ alert('Please enter location / कृपया स्थान दर्ज करें'); return; }
+
       const currentTokenRef = db.ref('currentToken');
-      currentTokenRef.transaction(curr => (curr || 0) + 1, (err, committed, snap)=>{
-        if(err){alert('Error, try again');return;}
-        const token = snap.val();
-        db.ref('patients').push({name,mobile,location,illness,token,timestamp:new Date().toISOString(),served:false});
-        tokenBox.style.display='block';
-        tokenBox.textContent = 'Your Token Number / आपका टोकन नंबर: ' + token;
-        form.reset();
+      currentTokenRef.transaction(function(curr){
+        return (curr || 0) + 1;
+      }, function(error, committed, snapshot){
+        if(error){ console.error(error); alert('Error allocating token. Try again / त्रुटि हुई। पुनः प्रयास करें'); }
+        else if(!committed){ alert('Unable to allocate token. Retry / टोकन असाइन नहीं हुआ। पुनः प्रयास करें'); }
+        else {
+          const tokenNumber = snapshot.val();
+          const patientsRef = db.ref('patients');
+          const newRef = patientsRef.push();
+          const payload = { name, mobile, location, illness, token: tokenNumber, timestamp: new Date().toISOString(), served: false };
+          newRef.set(payload).then(function(){ showToken(tokenNumber); form.reset(); }).catch(function(err){ console.error(err); alert('Failed to save patient data / डेटा सहेजने में त्रुटि'); });
+        }
       });
     });
+
+    doctorBtn.addEventListener('click', function(){ window.open('doctor.html','_blank'); });
   </script>
 </body>
 </html>
