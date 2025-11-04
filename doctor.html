@@ -1,33 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Lucknow Health And Skin Care Centre — Doctor Login</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<style>
-body{font-family:Poppins,Arial,Helvetica,sans-serif;background:#f7fbfb;margin:0;padding:18px;display:flex;align-items:center;justify-content:center;min-height:100vh}
-.box{width:100%;max-width:420px;background:#fff;padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.06);text-align:center}
-.brand h1{margin:0;font-size:18px;color:#00796b;font-weight:600}
-input{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef0;margin-top:8px;box-sizing:border-box}
-button{margin-top:12px;padding:12px;width:100%;border-radius:8px;border:0;background:#009688;color:#fff;font-weight:600;cursor:pointer}
-.hint{font-size:13px;color:#556;margin-top:8px}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lucknow Health And Skin Care Centre - Doctor Dashboard</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
-  <div class="box">
-    <div class="brand"><h1>Lucknow Health And Skin Care Centre</h1><div class="hint">Doctor Login / डॉक्टर लॉगिन</div></div>
-    <input id="pwd" type="password" placeholder="Enter password / पासवर्ड डालें">
-    <button id="loginBtn">Login / लॉगिन</button>
-    <div class="hint">Password provided by clinic • क्लिनिक द्वारा पासवर्ड दिया गया</div>
-  </div>
+  <header class="header-glass">
+    <h1>Lucknow Health And Skin Care Centre</h1>
+  </header>
+  <aside class="sidebar">
+    <nav>
+      <a href="index.html">Go to Patient View</a>
+      <a href="#" class="active">Doctor Dashboard</a>
+    </nav>
+  </aside>
 
-<script>
-document.getElementById('loginBtn').addEventListener('click', function(){
-  const p = document.getElementById('pwd').value || '';
-  if(p.trim() === 'LHASCC'){ localStorage.setItem('clinic_doctor_logged','1'); window.location.href = 'dashboard.html'; }
-  else alert('Incorrect password / गलत पासवर्ड');
-});
-</script>
+  <main class="main-content">
+    <div class="search-bar">
+      <input type="text" placeholder="Search by Name or Mobile..." />
+      <input type="date" />
+      <input type="number" placeholder="Token No." />
+    </div>
+
+    <table class="patient-table">
+      <thead>
+        <tr>
+          <th>Patient ID</th>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Issue / Description</th>
+          <th>Token No.</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>PID001</td>
+          <td>Ravi Kumar</td>
+          <td>32</td>
+          <td>Skin Allergy</td>
+          <td>05</td>
+          <td>2025-11-04</td>
+          <td><button class="add-btn">Edit</button></td>
+        </tr>
+        <tr>
+          <td>PID002</td>
+          <td>Anjali Sharma</td>
+          <td>27</td>
+          <td>Hair Treatment</td>
+          <td>06</td>
+          <td>2025-11-04</td>
+          <td><button class="add-btn">Edit</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+
+  <script src="assets/js/app.js"></script>
 </body>
 </html>

@@ -1,0 +1,135 @@
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #e6f3ff 0%, #ffffff 100%);
+  color: #003366;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.header-glass {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  text-align: center;
+  padding: 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #004a99;
+}
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 200px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(15px);
+  box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  padding-top: 5rem;
+}
+.sidebar nav a {
+  text-decoration: none;
+  color: #004a99;
+  padding: 1rem;
+  display: block;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+.sidebar nav a:hover, .sidebar nav a.active {
+  background: rgba(0, 74, 153, 0.15);
+  border-left: 4px solid #0099ff;
+}
+.main-content {
+  margin-left: 220px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.token-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  overflow-x: auto;
+}
+.token-card {
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(12px);
+  border-radius: 15px;
+  padding: 1rem;
+  min-width: 150px;
+  text-align: center;
+  font-weight: 600;
+  color: #004a99;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.token-card span {
+  display: block;
+  font-size: 1.8rem;
+  color: #0066cc;
+}
+.add-new-card {
+  display: flex;
+  justify-content: flex-start;
+}
+.add-btn {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #007bff 0%, #00c6ff 100%);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease;
+}
+.add-btn:hover { transform: scale(1.05); }
+.search-bar {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.search-bar input {
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #99c2ff;
+  flex: 1;
+}
+.patient-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255,255,255,0.4);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.patient-table th, .patient-table td {
+  padding: 0.8rem;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  text-align: left;
+  color: #004a99;
+}
+.patient-table th {
+  background: rgba(0,74,153,0.1);
+  font-weight: 600;
+}
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main-content { margin-left: 0; }
+  .token-row { overflow-x: auto; }
+}
+a.switch-link {
+  display: inline-block;
+  text-decoration: none;
+  background: rgba(0,74,153,0.15);
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  color: #004a99;
+  font-weight: 500;
+}
+a.switch-link:hover {
+  background: rgba(0,74,153,0.3);
+}
