@@ -1,123 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Doctor Dashboard - Lucknow Health & Skin Care Centre</title>
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
-
   <style>
     body {
-      margin: 0;
       font-family: "Poppins", sans-serif;
-      background: linear-gradient(135deg, #eaf3ff, #f9fcff);
-      color: #062b5a;
+      background: linear-gradient(135deg, #e8f1fc 0%, #f4f9ff 100%);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
+      color: #1a2a4a;
     }
 
     .clinic-header {
       margin-top: 20px;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 600;
-      background: rgba(240, 248, 255, 0.35);
+      background: rgba(255, 255, 255, 0.3);
       border-radius: 20px;
-      padding: 10px 30px;
-      backdrop-filter: blur(12px);
-      color: #084a8f;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      padding: 8px 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     }
 
-    .dashboard-title {
-      margin: 15px 0;
-      color: #2c4e82;
+    h2 {
+      margin-top: 10px;
       font-weight: 500;
+      color: #2b4b75;
     }
 
     .token-cards {
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 14px;
-      margin: 10px 0 25px;
+      gap: 12px;
+      margin: 15px 0;
     }
 
     .token-card {
-      background: rgba(210, 230, 255, 0.45);
+      background: rgba(255, 255, 255, 0.45);
       border-radius: 15px;
-      padding: 12px 18px;
+      padding: 10px 18px;
       text-align: center;
       min-width: 110px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-      backdrop-filter: blur(18px);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      transition: all 0.3s ease;
-    }
-
-    .token-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      backdrop-filter: blur(15px);
     }
 
     .token-card h3 {
-      font-size: 0.85rem;
-      color: #1e497b;
       margin: 5px 0;
+      color: #3266a8;
+      font-size: 0.9rem;
     }
 
     .token-value {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       font-weight: bold;
-      color: #062b5a;
     }
 
     .add-btn {
-      background: rgba(190, 220, 255, 0.45);
-      border: none;
-      padding: 10px 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
       border-radius: 12px;
-      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.35);
+      border: none;
       cursor: pointer;
-      color: #093b7e;
+      backdrop-filter: blur(10px);
+      transition: 0.2s ease-in-out;
       font-weight: 500;
-      transition: 0.3s;
-      margin-bottom: 15px;
+      color: #1f3d66;
+      margin-bottom: 10px;
     }
 
     .add-btn:hover {
-      background: rgba(220, 240, 255, 0.7);
+      background: rgba(255, 255, 255, 0.6);
     }
 
     .table-container {
       width: 95%;
       overflow-x: auto;
-      border-radius: 18px;
-      background: rgba(240, 248, 255, 0.5);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-      margin-bottom: 30px;
+      margin-top: 10px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 16px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
+      text-align: left;
       font-size: 0.9rem;
     }
 
     th, td {
-      padding: 10px 12px;
-      text-align: left;
+      padding: 10px 14px;
       border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     th {
-      background: rgba(220, 240, 255, 0.6);
+      background: rgba(255, 255, 255, 0.4);
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(8px);
       cursor: move;
     }
 
@@ -126,72 +118,73 @@
       background: none;
       cursor: pointer;
       font-size: 1rem;
-      margin-right: 6px;
     }
 
     .edit-btn { color: #2563eb; }
     .delete-btn { color: #dc2626; }
 
-    /* Modal */
+    /* Modal styling */
     .modal {
       display: none;
       position: fixed;
       z-index: 1000;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(3px);
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
       justify-content: center;
       align-items: center;
+      backdrop-filter: blur(3px);
     }
 
     .modal-content {
-      background: rgba(240, 248, 255, 0.85);
-      border-radius: 18px;
-      padding: 20px 25px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 14px;
+      padding: 20px;
       width: 90%;
       max-width: 400px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      color: #062b5a;
-      backdrop-filter: blur(15px);
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     }
 
     .modal-content input {
       width: 100%;
       margin: 6px 0;
-      padding: 8px 10px;
+      padding: 8px;
       border-radius: 10px;
-      border: 1px solid rgba(0,0,0,0.1);
-      font-size: 0.9rem;
+      border: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     .modal-content button {
       margin-top: 10px;
-      width: 100%;
-      background: #0b66d3;
+      padding: 10px 15px;
+      background: #2563eb;
       color: white;
       border: none;
-      padding: 10px 0;
       border-radius: 10px;
-      font-weight: 500;
       cursor: pointer;
     }
 
     @media (max-width: 768px) {
-      .token-cards { flex-wrap: nowrap; overflow-x: auto; }
-      .token-card { min-width: 100px; }
+      .token-card {
+        min-width: 95px;
+        padding: 8px 12px;
+      }
+      .token-value { font-size: 1.1rem; }
+      th, td { padding: 8px; font-size: 0.85rem; }
     }
   </style>
 </head>
-
 <body>
+
   <div class="clinic-header">Lucknow Health & Skin Care Centre</div>
-  <h2 class="dashboard-title">Doctor Dashboard</h2>
+  <h2>Doctor Dashboard</h2>
 
   <div class="token-cards">
     <div class="token-card"><h3>Current</h3><div class="token-value" id="currentToken">--</div></div>
     <div class="token-card"><h3>Next</h3><div class="token-value" id="nextToken">--</div></div>
-    <div class="token-card"><h3>Remaining</h3><div class="token-value" id="remainingToken">--</div></div>
+    <div class="token-card"><h3>Remaining</h3><div class="token-value" id="remainingTokens">--</div></div>
   </div>
 
   <button class="add-btn" onclick="openModal()">➕ Add Patient</button>
@@ -211,88 +204,100 @@
           <th>Actions</th>
         </tr>
       </thead>
-      <tbody id="patientData"></tbody>
+      <tbody id="patientList"></tbody>
     </table>
   </div>
 
-  <!-- Add Patient Modal -->
+  <!-- Add/Edit Modal -->
   <div id="patientModal" class="modal">
     <div class="modal-content">
-      <h3>Add Patient</h3>
-      <input type="text" id="pName" placeholder="Patient Name" required>
-      <input type="number" id="pAge" placeholder="Age">
-      <input type="text" id="pMobile" placeholder="Mobile Number">
-      <input type="text" id="pAddress" placeholder="Address">
-      <input type="text" id="pIllness" placeholder="Illness / Description">
-      <button onclick="addPatient()">Save</button>
+      <h3 id="modalTitle">Add Patient</h3>
+      <input type="text" id="pName" placeholder="Patient Name" />
+      <input type="number" id="pAge" placeholder="Age" />
+      <input type="text" id="pMobile" placeholder="Mobile" />
+      <input type="text" id="pAddress" placeholder="Address" />
+      <input type="text" id="pIllness" placeholder="Illness" />
+      <button onclick="savePatient()">Save</button>
     </div>
   </div>
 
   <script>
-    // Firebase setup
-    const firebaseConfig = {
-      apiKey: "AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
-      authDomain: "clinic-token-system-e1430.firebaseapp.com",
-      databaseURL: "https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "clinic-token-system-e1430",
-      storageBucket: "clinic-token-system-e1430.firebasestorage.app",
-      messagingSenderId: "1014958043227",
-      appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
-    };
+    let patients = [];
+    let editIndex = null;
 
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    const modal = document.getElementById('patientModal');
-    function openModal() { modal.style.display = 'flex'; }
-    window.onclick = (e) => { if (e.target == modal) modal.style.display = 'none'; }
-
-    function addPatient() {
-      const name = document.getElementById('pName').value;
-      const age = document.getElementById('pAge').value;
-      const mobile = document.getElementById('pMobile').value;
-      const address = document.getElementById('pAddress').value;
-      const illness = document.getElementById('pIllness').value;
-
-      const newRef = db.ref('patients').push();
-      const id = Date.now();
-      const token = Math.floor(Math.random() * 1000);
-      newRef.set({ id, token, name, age, mobile, address, illness, time: new Date().toLocaleString() });
-      modal.style.display = 'none';
-    }
-
-    db.ref('patients').on('value', snapshot => {
-      const data = snapshot.val();
-      const tbody = document.getElementById('patientData');
-      tbody.innerHTML = '';
-      if (data) {
-        Object.values(data).forEach(p => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${p.id}</td><td>${p.token}</td><td>${p.name}</td>
-            <td>${p.age}</td><td>${p.mobile}</td><td>${p.address}</td>
-            <td>${p.illness}</td><td>${p.time}</td>
-            <td class="actions">
-              <button class="edit-btn" onclick="editPatient('${p.id}')">✏️</button>
-              <button class="delete-btn" onclick="deletePatient('${p.id}')">🗑️</button>
-            </td>`;
-          tbody.appendChild(row);
-        });
+    function openModal(edit = false, index = null) {
+      document.getElementById("patientModal").style.display = "flex";
+      document.getElementById("modalTitle").textContent = edit ? "Edit Patient" : "Add Patient";
+      editIndex = edit ? index : null;
+      if (edit) {
+        const p = patients[index];
+        document.getElementById("pName").value = p.name;
+        document.getElementById("pAge").value = p.age;
+        document.getElementById("pMobile").value = p.mobile;
+        document.getElementById("pAddress").value = p.address;
+        document.getElementById("pIllness").value = p.illness;
+      } else {
+        document.querySelectorAll(".modal-content input").forEach(i => i.value = "");
       }
-    });
-
-    function editPatient(id) {
-      const newIllness = prompt("Enter new illness/description:");
-      if (newIllness) db.ref('patients').orderByChild('id').equalTo(Number(id)).once('value', snap => {
-        snap.forEach(child => child.ref.update({ illness: newIllness }));
-      });
     }
 
-    function deletePatient(id) {
-      db.ref('patients').orderByChild('id').equalTo(Number(id)).once('value', snap => {
-        snap.forEach(child => child.ref.remove());
-      });
+    function savePatient() {
+      const name = document.getElementById("pName").value.trim();
+      if (!name) return alert("Name is required");
+      const age = document.getElementById("pAge").value.trim();
+      const mobile = document.getElementById("pMobile").value.trim();
+      const address = document.getElementById("pAddress").value.trim();
+      const illness = document.getElementById("pIllness").value.trim();
+
+      const newPatient = {
+        id: patients.length + 1,
+        token: 1000 + patients.length + 1,
+        name, age, mobile, address, illness,
+        time: new Date().toLocaleString()
+      };
+
+      if (editIndex !== null) patients[editIndex] = newPatient;
+      else patients.push(newPatient);
+
+      renderTable();
+      document.getElementById("patientModal").style.display = "none";
     }
+
+    function renderTable() {
+      const tbody = document.getElementById("patientList");
+      tbody.innerHTML = "";
+      patients.forEach((p, i) => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${p.id}</td>
+            <td>${p.token}</td>
+            <td>${p.name}</td>
+            <td>${p.age}</td>
+            <td>${p.mobile}</td>
+            <td>${p.address}</td>
+            <td>${p.illness}</td>
+            <td>${p.time}</td>
+            <td class="actions">
+              <button class="edit-btn" onclick="openModal(true, ${i})">✏️</button>
+              <button class="delete-btn" onclick="deletePatient(${i})">🗑️</button>
+            </td>
+          </tr>`;
+      });
+      document.getElementById("remainingTokens").innerText = patients.length;
+    }
+
+    function deletePatient(i) {
+      if (confirm("Delete this record?")) {
+        patients.splice(i, 1);
+        renderTable();
+      }
+    }
+
+    // Close modal when clicking outside
+    window.onclick = e => {
+      if (e.target == document.getElementById("patientModal"))
+        document.getElementById("patientModal").style.display = "none";
+    };
   </script>
 </body>
 </html>
