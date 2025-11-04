@@ -1,235 +1,227 @@
-/* GLOBAL BASE */
+/* 🌐 Universal Styling */
 body {
   margin: 0;
   font-family: "Poppins", "Segoe UI", sans-serif;
-  background: linear-gradient(135deg, #dff2ff, #eef6ff, #ffffff);
-  color: #1b1b1b;
+  background: radial-gradient(circle at 20% 20%, #e7f3ff, #fafdff, #eaf3ff);
+  color: #111;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   overflow-x: hidden;
 }
 
-.container {
-  max-width: 1000px;
-  margin: auto;
-  padding: 20px;
-}
-
+/* 🌟 Clinic Title */
 h1.clinic-title {
-  text-align: center;
   font-size: 28px;
   font-weight: 700;
-  color: #0078d7;
-  margin-top: 30px;
-  letter-spacing: 0.5px;
+  text-align: center;
+  color: #005eb8;
+  margin-top: 24px;
+  margin-bottom: 10px;
 }
 
 .subtitle {
   text-align: center;
-  color: #2b2b2b;
-  font-weight: 500;
+  color: #444;
   margin-bottom: 25px;
 }
 
-/* FORM CARD */
-.form-card {
-  background: rgba(255, 255, 255, 0.45);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 20px;
-  padding: 25px;
-  margin-bottom: 25px;
-  box-shadow: 0 8px 30px rgba(0, 100, 255, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.form-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 35px rgba(0, 120, 255, 0.15);
-}
-
-.form-card input,
-.form-card textarea {
-  width: 100%;
-  padding: 12px 14px;
-  margin: 8px 0;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  font-size: 15px;
-  background: rgba(255, 255, 255, 0.8);
-  color: #222;
-}
-
-.form-card input:focus,
-.form-card textarea:focus {
-  outline: none;
-  border: 1px solid #0078d7;
-  box-shadow: 0 0 8px rgba(0, 120, 215, 0.2);
-}
-
-.form-card button {
-  width: 100%;
-  background: linear-gradient(135deg, #0078d7, #00aaff);
-  border: none;
-  color: #fff;
-  padding: 14px;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 16px;
-  margin-top: 10px;
-  transition: background 0.3s ease, transform 0.1s ease;
-}
-
-.form-card button:hover {
-  background: linear-gradient(135deg, #0066cc, #0099ee);
-  transform: scale(1.02);
-}
-
-/* TOKEN DISPLAY */
-.token-display {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-top: 20px;
-}
-
+/* 🧊 Glass Card Base */
 .glass-card {
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(14px);
-  border-radius: 18px;
-  padding: 20px 25px;
-  min-width: 230px;
-  text-align: center;
-  box-shadow: 0 8px 30px rgba(0, 120, 215, 0.1);
+  background: rgba(255, 255, 255, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.4);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
 
 .glass-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 35px rgba(0, 120, 215, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 40px rgba(31, 38, 135, 0.2);
 }
 
-.glass-card h3 {
-  margin: 5px 0 10px;
-  color: #0078d7;
-  font-weight: 600;
+/* 📊 Token Display Layout */
+.token-display {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+  margin: 20px auto;
 }
 
-.glass-card p {
-  font-size: 32px;
+.token-display .glass-card {
+  padding: 18px 26px;
+  text-align: center;
+  min-width: 180px;
+}
+
+.token-display h3 {
+  margin: 5px 0;
+  color: #005eb8;
+  font-size: 18px;
+}
+
+.token-display p {
+  font-size: 30px;
   font-weight: 700;
   color: #1b1b1b;
 }
 
-/* DOCTOR LOGIN BUTTON */
-.doctor-login-btn {
-  display: inline-block;
-  background: linear-gradient(135deg, #0078d7, #00aaff);
+/* 💠 Add Patient Button */
+.add-patient-btn {
+  background: linear-gradient(135deg, #0078ff, #00c6ff);
   border: none;
-  color: #fff;
-  padding: 14px 28px;
   border-radius: 50px;
-  font-weight: 600;
+  padding: 14px 28px;
+  color: #fff;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  margin-top: 20px;
-  box-shadow: 0 8px 25px rgba(0, 120, 215, 0.2);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 6px 25px rgba(0, 120, 255, 0.25);
+  transition: 0.25s;
+  margin-top: 10px;
 }
 
-.doctor-login-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0, 120, 215, 0.3);
+.add-patient-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(0, 120, 255, 0.35);
 }
 
-/* TABLE STYLING */
+/* 🪟 Modal Form */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 99;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.35);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(18px);
+  border-radius: 20px;
+  padding: 30px 25px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 10px 35px rgba(31, 38, 135, 0.25);
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-content input,
+.modal-content textarea {
+  width: 100%;
+  margin: 8px 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  font-size: 15px;
+}
+
+.modal-content button {
+  width: 100%;
+  margin-top: 14px;
+  background: linear-gradient(135deg, #0078ff, #00c6ff);
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ❌ Close Button */
+.close-btn {
+  float: right;
+  font-size: 22px;
+  cursor: pointer;
+  color: #333;
+}
+
+/* 📋 Table Section */
 .table-container {
+  width: 95%;
+  max-width: 1000px;
   overflow-x: auto;
-  margin-top: 25px;
+  margin: 25px auto;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(14px);
-  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px);
+  border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 8px 25px rgba(0, 120, 215, 0.1);
+  box-shadow: 0 6px 30px rgba(31, 38, 135, 0.1);
 }
 
-table th,
-table td {
+th,
+td {
   padding: 12px 10px;
   text-align: center;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-table th {
-  background: linear-gradient(135deg, #0078d7, #00aaff);
-  color: #fff;
-  font-weight: 600;
+th {
+  background: linear-gradient(135deg, #0078ff, #00b7ff);
+  color: white;
 }
 
-table td {
-  color: #333;
-  background: rgba(255, 255, 255, 0.8);
+tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.65);
 }
 
-table tr:hover td {
-  background: rgba(240, 248, 255, 0.7);
-}
-
-/* ACTION BUTTONS */
 button.edit-btn,
-button.save-btn,
-button.cancel-btn,
 button.delete-btn {
-  background: transparent;
+  background: none;
   border: none;
   cursor: pointer;
   font-size: 18px;
-  margin: 0 3px;
+  margin: 0 5px;
+  transition: 0.2s;
+}
+
+button.edit-btn:hover {
+  color: #0078ff;
 }
 
 button.delete-btn:hover {
   color: red;
 }
 
-button.edit-btn:hover {
-  color: #0078d7;
-}
-
-button.save-btn:hover {
-  color: green;
-}
-
-button.cancel-btn:hover {
-  color: gray;
-}
-
-/* FOOTER */
-.footer {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-  font-size: 14px;
-  margin-top: 40px;
-}
-
-/* RESPONSIVE */
+/* 📱 Responsive */
 @media (max-width: 768px) {
-  .glass-card {
+  .token-display {
+    flex-direction: column;
+    align-items: center;
+  }
+  .add-patient-btn {
     width: 90%;
   }
-  .form-card {
-    padding: 20px;
-  }
-  table th,
-  table td {
-    font-size: 13px;
-    padding: 10px 6px;
+  .modal-content {
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
   }
 }
