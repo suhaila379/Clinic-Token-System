@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Doctor Dashboard - Lucknow Health & Skin Care Centre</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doctor Dashboard – Lucknow Health & Skin Care Centre</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="sidebar">
@@ -15,44 +14,91 @@
       <a href="doctor.html">Doctor Dashboard</a>
     </div>
   </div>
-  <div class="main">
-    <div class="header">
-      <h1>Doctor Dashboard</h1>
-      <button id="addPatientBtn">+ New Patient</button>
-    </div>
-    <div class="token-cards">
-      <div class="card"><h3>Current Token</h3><p id="currentToken">--</p></div>
-      <div class="card"><h3>Next Token</h3><p id="nextToken">--</p></div>
-      <div class="card"><h3>Remaining Tokens</h3><p id="remainingTokens">--</p></div>
-    </div>
-    <table border="0" cellspacing="0" cellpadding="10" width="100%">
-      <thead>
-        <tr style="text-align:left; background:rgba(0,120,215,0.1)">
-          <th>Patient ID</th><th>Name</th><th>Age</th><th>Description</th><th>Token</th><th>Timestamp</th><th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="patientList">
-        <!-- Data will appear here -->
-      </tbody>
-    </table>
+
+  <!-- Login box -->
+  <div id="loginBox" style="text-align:center;margin-top:80px;">
+    <h2>Doctor Login</h2>
+    <input type="email" id="email" placeholder="Email" value="doctor@lhascc.com"><br><br>
+    <input type="password" id="password" placeholder="Password"><br><br>
+    <button id="loginBtn">Login</button>
+    <p id="errorMsg" style="color:red;"></p>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      databaseURL: "YOUR_DATABASE_URL",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+  <!-- Dashboard (hidden until login) -->
+  <div id="dashboard" style="display:none;">
+    <div class="main">
+      <div class="header">
+        <h1>Doctor Dashboard</h1>
+        <button id="logoutBtn">Logout</button>
+      </div>
 
-    document.getElementById('addPatientBtn').onclick = () => alert('Add Patient popup will go here.');
+      <div class="token-cards">
+        <div class="card"><h3>Current Token</h3><p id="currentToken">--</p></div>
+        <div class="card"><h3>Next Token</h3><p id="nextToken">--</p></div>
+        <div class="card"><h3>Remaining Tokens</h3><p id="remainingTokens">--</p></div>
+      </div>
+
+      <table border="0" cellspacing="0" cellpadding="10" width="100%">
+        <thead>
+          <tr style="text-align:left;background:rgba(0,120,215,0.1)">
+            <th>Patient ID</th><th>Name</th><th>Age</th><th>Description</th>
+            <th>Token</th><th>Timestamp</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="patientList"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // --- your Firebase configuration ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
+      authDomain: "clinic-token-system-e1430.firebaseapp.com",
+      databaseURL: "https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "clinic-token-system-e1430",
+      storageBucket: "clinic-token-system-e1430.firebasestorage.app",
+      messagingSenderId: "1014958043227",
+      appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
+    };
+
+    // --- initialize Firebase Auth ---
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const loginBox = document.getElementById("loginBox");
+    const dashboard = document.getElementById("dashboard");
+    const errorMsg = document.getElementById("errorMsg");
+
+    document.getElementById("loginBtn").addEventListener("click", () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          loginBox.style.display = "none";
+          dashboard.style.display = "block";
+        })
+        .catch((error) => {
+          console.error(error);
+          errorMsg.textContent = "Incorrect email or password.";
+        });
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginBox.style.display = "none";
+        dashboard.style.display = "block";
+      } else {
+        loginBox.style.display = "block";
+        dashboard.style.display = "none";
+      }
+    });
   </script>
 </body>
 </html>
