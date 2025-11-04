@@ -1,18 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Lucknow Health & Skin Care Centre</title>
-<link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lucknow Health & Skin Care Centre – Patient Token</title>
+<link rel="stylesheet" href="style.css" />
 </head>
-<body class="home-body">
-<div class="home-container">
+<body class="patient-body">
+<div class="container">
   <h1 class="clinic-title">Lucknow Health & Skin Care Centre</h1>
-  <div class="card-row">
-    <a class="home-card" href="patient.html">🩺 Patient View</a>
-    <a class="home-card" href="doctor.html">👨‍⚕️ Doctor Login</a>
+  <h2 class="subtitle">Get Your Token</h2>
+
+  <div class="form-card">
+    <input id="pName" placeholder="Patient Name" required />
+    <input id="pAge" placeholder="Age" type="number" />
+    <input id="pMobile" placeholder="Mobile Number" type="tel" />
+    <input id="pAddress" placeholder="Address" />
+    <textarea id="pIllness" placeholder="Illness / Description"></textarea>
+    <button id="generateBtn">Generate Token</button>
   </div>
+
+  <div class="token-display" id="tokenDisplay" style="display:none;">
+    <div class="token-card glass-card">
+      <h3>Your Token Number</h3>
+      <p id="patientToken">--</p>
+    </div>
+    <div class="token-card glass-card">
+      <h3>Currently Serving</h3>
+      <p id="currentToken">--</p>
+    </div>
+  </div>
+
+  <button class="doctor-login-btn" onclick="window.location.href='doctor.html'">👨‍⚕️ Doctor Login</button>
 </div>
+
+<footer class="footer">© 2025 Lucknow Health & Skin Care Centre</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, onValue, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+// Firebase config
+const app = initializeApp({
+  apiKey: "AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
+  authDomain: "clinic-token-system-e1430.firebaseapp.com",
+  databaseURL: "https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "clinic-token-system-e1430",
+  storageBucket: "clinic-token-system-e1430.firebasestorage.app",
+  messagingSenderId: "1014958043227",
+  appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
+});
+
+const db = getDatabase(app);
+
+const patientToken = document.getElementById("patientToken");
+const currentToken = document.getElementById("currentToken");
+const tokenDisplay = document.getElementById("tokenDisplay");
+const generateBtn = document.getElementById("generateBtn");
+
+onValue(ref(db, "tokens/current"), (snapshot) => {
+  const val = snapshot.val();
+  currentToken.textContent = val ? val : "--";
+});
+
+generateBtn.onclick = async () => {
+  const name = pName.value.trim();
+  if (!name) {
+    alert("Please enter patient name.");
+    return;
+  }
+  const snap = await get(child(ref(db), "patients"));
+  const all = snap.val() || {};
+  const last = Object.keys(all).length ? Object.keys(all)[Object.keys(all).length - 1] : "P000";
+  const num = parseInt(last.replace("P", "")) + 1;
+  const patientId = "P" + String(num).padStart(3, "0");
+  const token = "T" + String(num).padStart(3, "0");
+  const data = {
+    patientId,
+    token,
+    name,
+    age: pAge.value,
+    mobile: pMobile.value,
+    address: pAddress.value,
+    illness: pIllness.value,
+    timestamp: new Date().toLocaleString(),
+  };
+
+  await set(ref(db, "patients/" + patientId), data);
+  await set(ref(db, "tokens/current"), token);
+  await set(ref(db, "tokens/next"), "T" + String(num + 1).padStart(3, "0"));
+  await set(ref(db, "tokens/remaining"), Object.keys(all).length + 1);
+
+  tokenDisplay.style.display = "flex";
+  patientToken.textContent = token;
+
+  pName.value = pAge.value = pMobile.value = pAddress.value = pIllness.value = "";
+};
+</script>
 </body>
 </html>
