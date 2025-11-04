@@ -5,44 +5,131 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Doctor Dashboard – Lucknow Health & Skin Care Centre</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background: linear-gradient(135deg,#eaf5ff,#f8fbff);
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+    }
+    .sidebar {
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      width: 240px;
+      background: rgba(255,255,255,0.4);
+      backdrop-filter: blur(12px);
+      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+      padding: 20px;
+    }
+    .sidebar h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0066cc;
+      margin-bottom: 40px;
+    }
+    .sidebar a {
+      display: block;
+      color: #222;
+      text-decoration: none;
+      margin: 8px 0;
+      font-size: 15px;
+    }
+    .main {
+      margin-left: 260px;
+      padding: 40px 20px;
+    }
+    .token-cards {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .card {
+      flex: 1 1 180px;
+      background: rgba(255,255,255,0.5);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      text-align: center;
+      padding: 20px;
+      backdrop-filter: blur(12px);
+    }
+    #loginBox {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(20px);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+      width: 300px;
+      text-align: center;
+      z-index: 1000;
+    }
+    #loginBox input {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    #loginBox button {
+      width: 100%;
+      padding: 10px;
+      background: #0078d7;
+      border: none;
+      color: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    #logoutBtn {
+      background: #0078d7;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      float: right;
+    }
+    @media (max-width: 768px){
+      .sidebar {display:none;}
+      .main {margin-left:0;}
+      .token-cards{justify-content:center;}
+    }
+  </style>
 </head>
 <body>
   <div class="sidebar">
     <h2>Lucknow Health & Skin Care Centre</h2>
-    <div>
-      <a href="index.html">Patient View</a>
-      <a href="doctor.html">Doctor Dashboard</a>
-    </div>
+    <a href="index.html">Patient View</a>
+    <a href="doctor.html">Doctor Dashboard</a>
   </div>
 
-  <!-- Login box -->
-  <div id="loginBox" style="text-align:center;margin-top:80px;">
+  <!-- Login Form -->
+  <div id="loginBox">
     <h2>Doctor Login</h2>
-    <input type="email" id="email" placeholder="Email" value="doctor@lhascc.com"><br><br>
-    <input type="password" id="password" placeholder="Password"><br><br>
+    <input type="email" id="email" placeholder="Email" value="doctor@lhascc.com">
+    <input type="password" id="password" placeholder="Password">
     <button id="loginBtn">Login</button>
     <p id="errorMsg" style="color:red;"></p>
   </div>
 
-  <!-- Dashboard (hidden until login) -->
+  <!-- Dashboard -->
   <div id="dashboard" style="display:none;">
     <div class="main">
-      <div class="header">
-        <h1>Doctor Dashboard</h1>
-        <button id="logoutBtn">Logout</button>
-      </div>
-
+      <h1>Doctor Dashboard</h1>
+      <button id="logoutBtn">Logout</button>
       <div class="token-cards">
-        <div class="card"><h3>Current Token</h3><p id="currentToken">--</p></div>
-        <div class="card"><h3>Next Token</h3><p id="nextToken">--</p></div>
-        <div class="card"><h3>Remaining Tokens</h3><p id="remainingTokens">--</p></div>
+        <div class="card"><h3>Current</h3><p id="currentToken">--</p></div>
+        <div class="card"><h3>Next</h3><p id="nextToken">--</p></div>
+        <div class="card"><h3>Remaining</h3><p id="remainingTokens">--</p></div>
       </div>
-
-      <table border="0" cellspacing="0" cellpadding="10" width="100%">
+      <table border="0" cellspacing="0" cellpadding="10" width="100%" style="margin-top:25px;">
         <thead>
-          <tr style="text-align:left;background:rgba(0,120,215,0.1)">
-            <th>Patient ID</th><th>Name</th><th>Age</th><th>Description</th>
-            <th>Token</th><th>Timestamp</th><th>Actions</th>
+          <tr style="background:rgba(0,120,215,0.1)">
+            <th>Patient ID</th><th>Name</th><th>Age</th>
+            <th>Description</th><th>Token</th><th>Timestamp</th>
           </tr>
         </thead>
         <tbody id="patientList"></tbody>
@@ -55,7 +142,6 @@
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
       from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    // --- your Firebase configuration ---
     const firebaseConfig = {
       apiKey: "AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
       authDomain: "clinic-token-system-e1430.firebaseapp.com",
@@ -66,7 +152,6 @@
       appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
     };
 
-    // --- initialize Firebase Auth ---
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
@@ -82,8 +167,7 @@
           loginBox.style.display = "none";
           dashboard.style.display = "block";
         })
-        .catch((error) => {
-          console.error(error);
+        .catch(() => {
           errorMsg.textContent = "Incorrect email or password.";
         });
     });
