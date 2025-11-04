@@ -1,182 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Doctor Dashboard – Lucknow Health & Skin Care Centre</title>
-<link rel="stylesheet" href="style.css" />
-<style>
-body{margin:0;font-family:"Segoe UI",sans-serif;background:linear-gradient(135deg,#eaf5ff,#f8fbff);}
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:rgba(255,255,255,0.4);
-  backdrop-filter:blur(12px);box-shadow:2px 0 10px rgba(0,0,0,0.05);padding:20px;transition:.3s;z-index:1000;}
-.sidebar.hidden{left:-260px;}
-.sidebar h2{color:#0066cc;font-size:18px;margin-bottom:30px;}
-.sidebar a{display:block;margin:8px 0;color:#222;text-decoration:none;}
-.menu-btn{position:fixed;bottom:25px;left:25px;background:#0078d7;color:#fff;border:none;
-  border-radius:50%;width:50px;height:50px;font-size:24px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.2);z-index:1200;}
-.main{margin-left:260px;padding:20px;}
-@media(max-width:1024px){.main{margin-left:0;}.menu-btn{display:block;}.sidebar{left:-260px;}}
-.token-cards{display:flex;gap:10px;overflow-x:auto;margin-top:10px;}
-.card{min-width:160px;flex:0 0 auto;background:rgba(255,255,255,0.6);backdrop-filter:blur(10px);
-  border-radius:14px;padding:15px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.05);}
-.form-card{background:rgba(255,255,255,0.6);backdrop-filter:blur(10px);padding:20px;margin:20px 0;
-  border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.05);}
-.form-card input,textarea{width:100%;margin:6px 0;padding:10px;border:1px solid #ccc;border-radius:8px;}
-.form-card button{background:#0078d7;color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;}
-.table-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin:10px 0;}
-.search-bar{padding:8px 12px;border:1px solid #ccc;border-radius:8px;width:240px;}
-.download-btn{background:linear-gradient(135deg,#0078d7,#00aaff);color:#fff;border:none;
-  padding:8px 14px;border-radius:8px;cursor:pointer;}
-.patient-table{width:100%;border-collapse:collapse;overflow-x:auto;display:block;}
-.patient-table th,.patient-table td{padding:10px;white-space:nowrap;border-bottom:1px solid #eee;text-align:left;}
-.patient-table th{cursor:move;background:rgba(0,120,215,0.08);position:sticky;top:0;}
-.toast{position:fixed;bottom:25px;right:25px;background:rgba(0,120,215,0.9);color:#fff;
-  padding:12px 18px;border-radius:10px;display:none;z-index:2000;}
-.login-box{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-  background:rgba(255,255,255,0.8);backdrop-filter:blur(20px);padding:30px;border-radius:16px;
-  box-shadow:0 4px 25px rgba(0,0,0,0.1);text-align:center;width:300px;z-index:1100;}
-.login-box input{width:100%;margin:6px 0;padding:10px;border:1px solid #ccc;border-radius:8px;}
-.login-box button{width:100%;padding:10px;background:#0078d7;border:none;color:#fff;border-radius:8px;font-weight:600;cursor:pointer;}
-.logout{background:#0078d7;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;}
-</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Doctor Dashboard – LHASCC</title>
+<link rel="stylesheet" href="style.css">
 </head>
-<body>
-<button class="menu-btn" id="menuBtn">☰</button>
-<div class="sidebar" id="sidebar">
-  <h2>Lucknow Health & Skin Care Centre</h2>
-  <a href="index.html">Patient View</a>
-  <a href="doctor.html">Doctor Dashboard</a>
-</div>
+<body class="doctor-body">
 
 <div id="loginBox" class="login-box">
   <h2>Doctor Login</h2>
-  <input type="email" id="email" placeholder="Email" value="doctor@lhascc.com">
+  <input type="email" id="email" value="doctor@lhascc.com">
   <input type="password" id="password" placeholder="Password">
   <button id="loginBtn">Login</button>
   <p id="errorMsg" style="color:red;"></p>
 </div>
 
 <div id="dashboard" style="display:none;">
-  <div class="main">
-    <div class="header"><h1>Doctor Dashboard</h1><button id="logoutBtn" class="logout">Logout</button></div>
-    <div class="token-cards">
-      <div class="card"><h3>Current Token</h3><p id="currentToken">--</p></div>
-      <div class="card"><h3>Next Token</h3><p id="nextToken">--</p></div>
-      <div class="card"><h3>Remaining Tokens</h3><p id="remainingTokens">--</p></div>
-    </div>
+  <header class="header">
+    <h1>Doctor Dashboard</h1>
+    <button id="logoutBtn" class="logout">Logout</button>
+  </header>
 
-    <div class="form-card">
-      <h3>Add New Patient</h3>
-      <input id="pName" placeholder="Patient Name">
-      <input id="pAge" placeholder="Age">
-      <input id="pMobile" placeholder="Mobile Number">
-      <input id="pAddress" placeholder="Address">
-      <textarea id="pIllness" placeholder="Illness / Description"></textarea>
-      <button id="generateBtn">Generate Token</button>
-    </div>
-
-    <div class="table-actions">
-      <input type="text" id="searchBox" class="search-bar" placeholder="Search patients...">
-      <button id="downloadCSV" class="download-btn">⬇️ Download CSV</button>
-    </div>
-
-    <table class="patient-table" id="patientTable">
-      <thead>
-        <tr id="tableHeader">
-          <th data-key="patientId">Patient ID</th>
-          <th data-key="token">Token</th>
-          <th data-key="name">Name</th>
-          <th data-key="age">Age</th>
-          <th data-key="mobile">Mobile</th>
-          <th data-key="address">Address</th>
-          <th data-key="illness">Illness</th>
-          <th data-key="timestamp">Timestamp</th>
-        </tr>
-      </thead>
-      <tbody id="patientList"></tbody>
-    </table>
+  <div class="token-cards">
+    <div class="card"><h3>Current Token</h3><p id="currentToken">--</p></div>
+    <div class="card"><h3>Next Token</h3><p id="nextToken">--</p></div>
+    <div class="card"><h3>Remaining</h3><p id="remainingTokens">--</p></div>
   </div>
+
+  <div class="form-card">
+    <h3>Add / Edit Patient</h3>
+    <input id="pId" placeholder="Patient ID (auto)" disabled>
+    <input id="pName" placeholder="Name">
+    <input id="pAge" placeholder="Age">
+    <input id="pMobile" placeholder="Mobile">
+    <input id="pAddress" placeholder="Address">
+    <textarea id="pIllness" placeholder="Illness / Description"></textarea>
+    <button id="generateBtn">Generate / Update</button>
+  </div>
+
+  <div class="table-actions">
+    <input type="text" id="searchBox" class="search-bar" placeholder="Search...">
+    <button id="downloadCSV" class="download-btn">⬇️ CSV</button>
+  </div>
+
+  <table class="patient-table" id="patientTable">
+    <thead><tr>
+      <th>Patient ID</th><th>Token</th><th>Name</th><th>Age</th>
+      <th>Mobile</th><th>Address</th><th>Illness</th><th>Timestamp</th><th>Edit</th>
+    </tr></thead>
+    <tbody id="patientList"></tbody>
+  </table>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getDatabase, ref, set, onValue, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getDatabase,ref,set,onValue,get,child,update} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const app = initializeApp({
-  apiKey:"YOUR_API_KEY",
-  authDomain:"YOUR_AUTH_DOMAIN",
-  databaseURL:"YOUR_DB_URL",
-  projectId:"YOUR_PROJECT_ID",
-  storageBucket:"YOUR_BUCKET",
-  messagingSenderId:"YOUR_SENDER_ID",
-  appId:"YOUR_APP_ID"
+ apiKey:"AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
+ authDomain:"clinic-token-system-e1430.firebaseapp.com",
+ databaseURL:"https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
+ projectId:"clinic-token-system-e1430",
+ storageBucket:"clinic-token-system-e1430.firebasestorage.app",
+ messagingSenderId:"1014958043227",
+ appId:"1:1014958043227:web:c5a33675ddf76572274f7e"
 });
 
 const auth=getAuth(app);const db=getDatabase(app);
-const sidebar=document.getElementById("sidebar"),menuBtn=document.getElementById("menuBtn");
-menuBtn.onclick=()=>{sidebar.classList.toggle("hidden");};
+const loginBox=document.getElementById("loginBox"),dash=document.getElementById("dashboard"),toast=document.getElementById("toast");
 
-const loginBox=document.getElementById("loginBox"),dashboard=document.getElementById("dashboard"),toast=document.getElementById("toast");
-function toastMsg(t){toast.textContent=t;toast.style.display="block";setTimeout(()=>toast.style.display="none",3000);}
-document.getElementById("loginBtn").onclick=()=>{signInWithEmailAndPassword(auth,email.value,password.value)
-.then(()=>{loginBox.style.display="none";dashboard.style.display="block";loadAll();})
-.catch(()=>errorMsg.textContent="Incorrect credentials");};
+function msg(t){toast.textContent=t;toast.style.display="block";setTimeout(()=>toast.style.display="none",2500);}
+
+document.getElementById("loginBtn").onclick=()=>signInWithEmailAndPassword(auth,email.value,password.value)
+ .then(()=>{loginBox.style.display="none";dash.style.display="block";load();})
+ .catch(()=>errorMsg.textContent="Incorrect credentials");
+
 logoutBtn.onclick=()=>signOut(auth);
-onAuthStateChanged(auth,u=>{if(u){loginBox.style.display="none";dashboard.style.display="block";loadAll();}else{loginBox.style.display="block";dashboard.style.display="none";}});
+onAuthStateChanged(auth,u=>{if(u){loginBox.style.display="none";dash.style.display="block";load();}else{dash.style.display="none";loginBox.style.display="block";}});
 
-function loadAll(){
-  onValue(ref(db,"tokens/current"),s=>currentToken.textContent=s.val()??"--");
-  onValue(ref(db,"tokens/next"),s=>nextToken.textContent=s.val()??"--");
-  onValue(ref(db,"tokens/remaining"),s=>remainingTokens.textContent=s.val()??"--");
-  onValue(ref(db,"patients"),s=>render(s.val()||{}));
+async function load(){
+ onValue(ref(db,"tokens/current"),s=>currentToken.textContent=s.val()??"--");
+ onValue(ref(db,"tokens/next"),s=>nextToken.textContent=s.val()??"--");
+ onValue(ref(db,"tokens/remaining"),s=>remainingTokens.textContent=s.val()??"--");
+ onValue(ref(db,"patients"),s=>render(s.val()||{}));
 }
-generateBtn.onclick=async()=>{
-  const data={name:pName.value,age:pAge.value,mobile:pMobile.value,address:pAddress.value,illness:pIllness.value};
-  const snap=await get(child(ref(db),"patients"));
-  const all=snap.val()||{},keys=Object.keys(all),last=keys.length?keys[keys.length-1]:"P000";
-  const num=parseInt(last.replace("P",""))+1,id="P"+String(num).padStart(3,"0"),token="T"+String(num).padStart(3,"0");
-  const time=new Date().toLocaleString();
-  await set(ref(db,"patients/"+id),{patientId:id,token:token,...data,timestamp:time});
-  await set(ref(db,"tokens/current"),token);
-  await set(ref(db,"tokens/next"),"T"+String(num+1).padStart(3,"0"));
-  toastMsg(`✅ Token ${token} generated`);
-  pName.value=pAge.value=pMobile.value=pAddress.value=pIllness.value="";
-};
 
-searchBox.oninput=e=>{
-  const v=e.target.value.toLowerCase();
-  document.querySelectorAll("#patientList tr").forEach(tr=>tr.style.display=tr.textContent.toLowerCase().includes(v)?"":"none");
+generateBtn.onclick=async()=>{
+ const snap=await get(child(ref(db),"patients"));const all=snap.val()||{};
+ let id=pId.value||"P"+String(Object.keys(all).length+1).padStart(3,"0");
+ let token="T"+String(Object.keys(all).length+1).padStart(3,"0");
+ const data={patientId:id,token:token,name:pName.value,age:pAge.value,mobile:pMobile.value,address:pAddress.value,illness:pIllness.value,timestamp:new Date().toLocaleString()};
+ await set(ref(db,"patients/"+id),data);
+ await set(ref(db,"tokens/current"),token);
+ await set(ref(db,"tokens/next"),"T"+String(Object.keys(all).length+2).padStart(3,"0"));
+ msg("Saved "+id); pId.value=pName.value=pAge.value=pMobile.value=pAddress.value=pIllness.value="";
 };
 
 function render(d){
-  const list=document.getElementById("patientList");list.innerHTML="";
-  Object.values(d).forEach(p=>{
-    const tr=document.createElement("tr");
-    getOrder().forEach(k=>{const td=document.createElement("td");td.textContent=p[k]||"";tr.appendChild(td);});
-    list.appendChild(tr);
+ const list=document.getElementById("patientList");list.innerHTML="";
+ Object.values(d).forEach(p=>{
+  const tr=document.createElement("tr");
+  ["patientId","token","name","age","mobile","address","illness","timestamp"].forEach(k=>{
+   const td=document.createElement("td");td.textContent=p[k]||"";tr.appendChild(td);
   });
+  const editTd=document.createElement("td");
+  editTd.innerHTML="✏️";editTd.style.cursor="pointer";
+  editTd.onclick=()=>{pId.value=p.patientId;pName.value=p.name||"";pAge.value=p.age||"";pMobile.value=p.mobile||"";pAddress.value=p.address||"";pIllness.value=p.illness||"";window.scrollTo({top:0,behavior:'smooth'});}
+  tr.appendChild(editTd);
+  list.appendChild(tr);
+ });
 }
-downloadCSV.onclick=()=>{
-  const rows=[["Patient ID","Token","Name","Age","Mobile","Address","Illness","Timestamp"]];
-  patientList.querySelectorAll("tr").forEach(tr=>{
-    const row=[];tr.querySelectorAll("td").forEach(td=>row.push(td.textContent));rows.push(row);
-  });
-  const blob=new Blob([rows.map(r=>r.join(",")).join("\n")],{type:"text/csv"});
-  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
-  a.download=`patients_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+
+searchBox.oninput=e=>{
+ const v=e.target.value.toLowerCase();
+ document.querySelectorAll("#patientList tr").forEach(tr=>tr.style.display=tr.textContent.toLowerCase().includes(v)?"":"none");
 };
-const head=document.getElementById("tableHeader");let drag;
-head.querySelectorAll("th").forEach(th=>{
-  th.draggable=true;
-  th.ondragstart=()=>drag=th;
-  th.ondragover=e=>e.preventDefault();
-  th.ondrop=e=>{if(drag!==th){head.insertBefore(drag,th.nextSibling);saveOrder();loadAll();}}
-});
-function getOrder(){const o=JSON.parse(localStorage.getItem("order")||"[]");return o.length?o:["patientId","token","name","age","mobile","address","illness","timestamp"];}
-function saveOrder(){const keys=Array.from(head.children).map(t=>t.dataset.key);localStorage.setItem("order",JSON.stringify(keys));}
+
+downloadCSV.onclick=()=>{
+ const rows=[["Patient ID","Token","Name","Age","Mobile","Address","Illness","Timestamp"]];
+ patientList.querySelectorAll("tr").forEach(tr=>{
+  const row=[];tr.querySelectorAll("td").forEach(td=>row.push(td.textContent));rows.push(row);
+ });
+ const blob=new Blob([rows.map(r=>r.join(",")).join("\\n")],{type:"text/csv"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+ a.download=`patients_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+};
 </script>
 </body>
 </html>
