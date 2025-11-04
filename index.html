@@ -1,162 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Patient Queue – Lucknow Health & Skin Care Centre</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    body {
-      background: linear-gradient(135deg,#eaf5ff,#f8fbff);
-      font-family: "Segoe UI", sans-serif;
-      margin: 0;
-    }
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .header h1 {
-      font-size: 28px;
-      font-weight: 700;
-      color: #004d99;
-    }
-    .token-row {
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .card {
-      flex: 1 1 220px;
-      max-width: 260px;
-      background: rgba(255,255,255,0.6);
-      border-radius: 16px;
-      box-shadow: 0 4px 25px rgba(0,0,0,0.08);
-      text-align: center;
-      padding: 20px;
-      backdrop-filter: blur(12px);
-      transition: transform 0.2s ease;
-    }
-    .card:hover { transform: translateY(-4px); }
-    .card h3 {
-      font-size: 16px;
-      color: #0066cc;
-      margin-bottom: 10px;
-    }
-    .card p {
-      font-size: 32px;
-      font-weight: 700;
-      color: #333;
-      margin: 0;
-    }
-    footer {
-      margin-top: 40px;
-      text-align: center;
-      font-size: 14px;
-      color: #888;
-    }
-
-    /* Floating Doctor Login Button */
-    .doctor-login-btn {
-      position: fixed;
-      bottom: 25px;
-      right: 25px;
-      background: linear-gradient(135deg,#0078d7,#00aaff);
-      color: white;
-      font-weight: 600;
-      border: none;
-      padding: 14px 22px;
-      border-radius: 30px;
-      box-shadow: 0 4px 25px rgba(0,0,0,0.15);
-      cursor: pointer;
-      transition: all 0.25s ease;
-    }
-    .doctor-login-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-    }
-
-    @media (max-width:768px){
-      .card {flex:1 1 100%;max-width:100%;}
-      .doctor-login-btn {padding:12px 18px;font-size:14px;}
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Lucknow Health & Skin Care Centre</title>
+<link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>Lucknow Health & Skin Care Centre</h1>
-      <h2 style="color:#333;font-size:22px;">Patient Queue</h2>
-    </div>
-
-    <div class="token-row">
-      <div class="card">
-        <h3>Current Token</h3>
-        <p id="currentToken">--</p>
-      </div>
-      <div class="card">
-        <h3>Next Token</h3>
-        <p id="nextToken">--</p>
-      </div>
-      <div class="card">
-        <h3>Remaining Tokens</h3>
-        <p id="remainingTokens">--</p>
-      </div>
-    </div>
-
-    <footer>
-      <p>© 2025 Lucknow Health & Skin Care Centre</p>
-    </footer>
+<body class="home-body">
+<div class="home-container">
+  <h1 class="clinic-title">Lucknow Health & Skin Care Centre</h1>
+  <div class="card-row">
+    <a class="home-card" href="patient.html">🩺 Patient View</a>
+    <a class="home-card" href="doctor.html">👨‍⚕️ Doctor Login</a>
   </div>
-
-  <!-- Floating Doctor Login Button -->
-  <button class="doctor-login-btn" onclick="window.location.href='doctor.html'">
-    👨‍⚕️ Doctor Login
-  </button>
-
-  <!-- Firebase JS for live token updates -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
-      authDomain: "clinic-token-system-e1430.firebaseapp.com",
-      databaseURL: "https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "clinic-token-system-e1430",
-      storageBucket: "clinic-token-system-e1430.firebasestorage.app",
-      messagingSenderId: "1014958043227",
-      appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    const currentTokenEl = document.getElementById("currentToken");
-    const nextTokenEl = document.getElementById("nextToken");
-    const remainingEl = document.getElementById("remainingTokens");
-
-    const currentTokenRef = ref(db, "tokens/current");
-    const nextTokenRef = ref(db, "tokens/next");
-    const remainingRef = ref(db, "tokens/remaining");
-
-    onValue(currentTokenRef, (snapshot) => {
-      currentTokenEl.textContent = snapshot.val() ?? "--";
-    });
-    onValue(nextTokenRef, (snapshot) => {
-      nextTokenEl.textContent = snapshot.val() ?? "--";
-    });
-    onValue(remainingRef, (snapshot) => {
-      remainingEl.textContent = snapshot.val() ?? "--";
-    });
-  </script>
+</div>
 </body>
 </html>
