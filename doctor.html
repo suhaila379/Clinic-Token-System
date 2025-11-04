@@ -1,188 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Doctor Dashboard – Lucknow Health & Skin Care Centre</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    body {
-      background: linear-gradient(135deg,#eaf5ff,#f8fbff);
-      font-family: "Segoe UI", sans-serif;
-      margin: 0;
-    }
-    .sidebar {
-      position: fixed;
-      left: 0; top: 0; bottom: 0;
-      width: 240px;
-      background: rgba(255,255,255,0.4);
-      backdrop-filter: blur(12px);
-      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-      padding: 20px;
-    }
-    .sidebar h2 {
-      font-size: 18px;
-      font-weight: 700;
-      color: #0066cc;
-      margin-bottom: 40px;
-    }
-    .sidebar a {
-      display: block;
-      color: #222;
-      text-decoration: none;
-      margin: 8px 0;
-      font-size: 15px;
-    }
-    .main {
-      margin-left: 260px;
-      padding: 40px 20px;
-    }
-    .token-cards {
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-    .card {
-      flex: 1 1 180px;
-      background: rgba(255,255,255,0.5);
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-      text-align: center;
-      padding: 20px;
-      backdrop-filter: blur(12px);
-    }
-    #loginBox {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%,-50%);
-      background: rgba(255,255,255,0.7);
-      backdrop-filter: blur(20px);
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.1);
-      width: 300px;
-      text-align: center;
-      z-index: 1000;
-    }
-    #loginBox input {
-      width: 100%;
-      margin: 8px 0;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-    #loginBox button {
-      width: 100%;
-      padding: 10px;
-      background: #0078d7;
-      border: none;
-      color: #fff;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    #logoutBtn {
-      background: #0078d7;
-      color: #fff;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      float: right;
-    }
-    @media (max-width: 768px){
-      .sidebar {display:none;}
-      .main {margin-left:0;}
-      .token-cards{justify-content:center;}
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Doctor Dashboard – Lucknow Health & Skin Care Centre</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+body{background:linear-gradient(135deg,#eaf5ff,#f8fbff);font-family:"Segoe UI",sans-serif;margin:0;}
+.form-card{background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);padding:20px;margin:20px 0;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.05);}
+.form-card input,textarea{width:100%;margin:6px 0;padding:10px;border:1px solid #ccc;border-radius:8px;}
+.form-card button{background:#0078d7;color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;}
+.table-actions{display:flex;justify-content:space-between;align-items:center;margin:15px 0;}
+.search-bar{padding:8px 12px;border:1px solid #ccc;border-radius:8px;width:240px;}
+.download-btn{background:linear-gradient(135deg,#0078d7,#00aaff);color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;}
+.toast{position:fixed;bottom:25px;right:25px;background:rgba(0,120,215,0.9);color:#fff;padding:12px 18px;border-radius:10px;display:none;}
+th{cursor:move;}
+</style>
 </head>
 <body>
-  <div class="sidebar">
-    <h2>Lucknow Health & Skin Care Centre</h2>
-    <a href="index.html">Patient View</a>
-    <a href="doctor.html">Doctor Dashboard</a>
-  </div>
+<div class="sidebar">
+  <h2>Lucknow Health & Skin Care Centre</h2>
+  <a href="index.html">Patient View</a>
+  <a href="doctor.html">Doctor Dashboard</a>
+</div>
 
-  <!-- Login Form -->
-  <div id="loginBox">
-    <h2>Doctor Login</h2>
-    <input type="email" id="email" placeholder="Email" value="doctor@lhascc.com">
-    <input type="password" id="password" placeholder="Password">
-    <button id="loginBtn">Login</button>
-    <p id="errorMsg" style="color:red;"></p>
-  </div>
+<div id="loginBox" class="login-box">
+  <h2>Doctor Login</h2>
+  <input type="email" id="email" placeholder="Email" value="doctor@lhascc.com">
+  <input type="password" id="password" placeholder="Password">
+  <button id="loginBtn">Login</button>
+  <p id="errorMsg" style="color:red;"></p>
+</div>
 
-  <!-- Dashboard -->
-  <div id="dashboard" style="display:none;">
-    <div class="main">
+<div id="dashboard" style="display:none;">
+  <div class="main">
+    <div class="header">
       <h1>Doctor Dashboard</h1>
-      <button id="logoutBtn">Logout</button>
-      <div class="token-cards">
-        <div class="card"><h3>Current</h3><p id="currentToken">--</p></div>
-        <div class="card"><h3>Next</h3><p id="nextToken">--</p></div>
-        <div class="card"><h3>Remaining</h3><p id="remainingTokens">--</p></div>
-      </div>
-      <table border="0" cellspacing="0" cellpadding="10" width="100%" style="margin-top:25px;">
-        <thead>
-          <tr style="background:rgba(0,120,215,0.1)">
-            <th>Patient ID</th><th>Name</th><th>Age</th>
-            <th>Description</th><th>Token</th><th>Timestamp</th>
-          </tr>
-        </thead>
-        <tbody id="patientList"></tbody>
-      </table>
+      <button id="logoutBtn" class="logout">Logout</button>
     </div>
+
+    <div class="token-cards">
+      <div class="card"><h3>Current Token</h3><p id="currentToken">--</p></div>
+      <div class="card"><h3>Next Token</h3><p id="nextToken">--</p></div>
+      <div class="card"><h3>Remaining Tokens</h3><p id="remainingTokens">--</p></div>
+    </div>
+
+    <!-- Add new patient -->
+    <div class="form-card">
+      <h3>Add New Patient</h3>
+      <input id="pName" placeholder="Patient Name">
+      <input id="pAge" placeholder="Age">
+      <input id="pMobile" placeholder="Mobile Number">
+      <input id="pAddress" placeholder="Address">
+      <textarea id="pIllness" placeholder="Illness / Description"></textarea>
+      <button id="generateBtn">Generate Token</button>
+    </div>
+
+    <div class="table-actions">
+      <input type="text" id="searchBox" class="search-bar" placeholder="Search patients...">
+      <button id="downloadCSV" class="download-btn">⬇️ Download CSV</button>
+    </div>
+
+    <table class="patient-table" id="patientTable">
+      <thead>
+        <tr id="tableHeader">
+          <th data-key="patientId">Patient ID</th>
+          <th data-key="token">Token</th>
+          <th data-key="name">Name</th>
+          <th data-key="age">Age</th>
+          <th data-key="mobile">Mobile</th>
+          <th data-key="address">Address</th>
+          <th data-key="illness">Illness</th>
+          <th data-key="timestamp">Timestamp</th>
+        </tr>
+      </thead>
+      <tbody id="patientList"></tbody>
+    </table>
   </div>
+</div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
-      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+<div class="toast" id="toast"></div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
-      authDomain: "clinic-token-system-e1430.firebaseapp.com",
-      databaseURL: "https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "clinic-token-system-e1430",
-      storageBucket: "clinic-token-system-e1430.firebasestorage.app",
-      messagingSenderId: "1014958043227",
-      appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
-    };
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, set, onValue, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+const firebaseConfig = {
+  apiKey: "AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
+  authDomain: "clinic-token-system-e1430.firebaseapp.com",
+  databaseURL: "https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "clinic-token-system-e1430",
+  storageBucket: "clinic-token-system-e1430.firebasestorage.app",
+  messagingSenderId: "1014958043227",
+  appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
+};
 
-    const loginBox = document.getElementById("loginBox");
-    const dashboard = document.getElementById("dashboard");
-    const errorMsg = document.getElementById("errorMsg");
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
-    document.getElementById("loginBtn").addEventListener("click", () => {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          loginBox.style.display = "none";
-          dashboard.style.display = "block";
-        })
-        .catch(() => {
-          errorMsg.textContent = "Incorrect email or password.";
-        });
+const loginBox=document.getElementById("loginBox");
+const dashboard=document.getElementById("dashboard");
+const errorMsg=document.getElementById("errorMsg");
+const toast=document.getElementById("toast");
+
+function showToast(msg){
+  toast.textContent=msg;
+  toast.style.display="block";
+  setTimeout(()=>toast.style.display="none",3000);
+}
+
+document.getElementById("loginBtn").addEventListener("click",()=>{
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value.trim();
+  signInWithEmailAndPassword(auth,email,password)
+  .then(()=>{loginBox.style.display="none";dashboard.style.display="block";loadPatients();})
+  .catch(()=>errorMsg.textContent="Incorrect email or password");
+});
+document.getElementById("logoutBtn").addEventListener("click",()=>signOut(auth));
+
+onAuthStateChanged(auth,user=>{
+  if(user){loginBox.style.display="none";dashboard.style.display="block";loadPatients();}
+  else{loginBox.style.display="block";dashboard.style.display="none";}
+});
+
+// Load tokens + patients
+function loadPatients(){
+  onValue(ref(db,"tokens/current"),s=>{document.getElementById("currentToken").textContent=s.val()??"--";});
+  onValue(ref(db,"tokens/next"),s=>{document.getElementById("nextToken").textContent=s.val()??"--";});
+  onValue(ref(db,"tokens/remaining"),s=>{document.getElementById("remainingTokens").textContent=s.val()??"--";});
+  onValue(ref(db,"patients"),s=>{
+    const data=s.val()||{};
+    renderTable(data);
+  });
+}
+
+// Add new patient
+document.getElementById("generateBtn").addEventListener("click",async()=>{
+  const pName=document.getElementById("pName").value.trim();
+  const pAge=document.getElementById("pAge").value.trim();
+  const pMobile=document.getElementById("pMobile").value.trim();
+  const pAddress=document.getElementById("pAddress").value.trim();
+  const pIllness=document.getElementById("pIllness").value.trim();
+  const snap=await get(child(ref(db),"patients"));
+  const patients=snap.val()||{};
+  const ids=Object.keys(patients);
+  const lastId=ids.length?ids[ids.length-1]:"P000";
+  const newIdNum=parseInt(lastId.replace("P",""))+1;
+  const newId="P"+String(newIdNum).padStart(3,"0");
+  const newToken="T"+String(newIdNum).padStart(3,"0");
+  const timestamp=new Date().toLocaleString();
+
+  await set(ref(db,"patients/"+newId),{
+    patientId:newId,token:newToken,name:pName,age:pAge,mobile:pMobile,address:pAddress,illness:pIllness,timestamp:timestamp
+  });
+  await set(ref(db,"tokens/current"),newToken);
+  await set(ref(db,"tokens/next"),"T"+String(newIdNum+1).padStart(3,"0"));
+  showToast(`✅ Token ${newToken} generated successfully`);
+  document.getElementById("pName").value="";
+  document.getElementById("pAge").value="";
+  document.getElementById("pMobile").value="";
+  document.getElementById("pAddress").value="";
+  document.getElementById("pIllness").value="";
+});
+
+// Search / filter
+document.getElementById("searchBox").addEventListener("input",e=>{
+  const term=e.target.value.toLowerCase();
+  const rows=document.querySelectorAll("#patientList tr");
+  rows.forEach(r=>{
+    r.style.display=r.textContent.toLowerCase().includes(term)?"":"none";
+  });
+});
+
+// Render table
+function renderTable(data){
+  const list=document.getElementById("patientList");
+  list.innerHTML="";
+  Object.values(data).forEach(p=>{
+    const tr=document.createElement("tr");
+    const cols=getSavedOrder();
+    cols.forEach(key=>{
+      const td=document.createElement("td");
+      td.textContent=p[key]||"";
+      tr.appendChild(td);
     });
+    list.appendChild(tr);
+  });
+}
 
-    document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
+// CSV download
+document.getElementById("downloadCSV").addEventListener("click",()=>{
+  const rows=[["Patient ID","Token","Name","Age","Mobile","Address","Illness","Timestamp"]];
+  document.querySelectorAll("#patientList tr").forEach(tr=>{
+    const row=[];
+    tr.querySelectorAll("td").forEach(td=>row.push(td.textContent));
+    rows.push(row);
+  });
+  const csv=rows.map(r=>r.join(",")).join("\n");
+  const blob=new Blob([csv],{type:"text/csv"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=`patients_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+});
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        loginBox.style.display = "none";
-        dashboard.style.display = "block";
-      } else {
-        loginBox.style.display = "block";
-        dashboard.style.display = "none";
-      }
-    });
-  </script>
+// Drag / reorder columns
+const headerRow=document.getElementById("tableHeader");
+let dragSrc;
+headerRow.querySelectorAll("th").forEach(th=>{
+  th.draggable=true;
+  th.addEventListener("dragstart",e=>{dragSrc=th;});
+  th.addEventListener("dragover",e=>e.preventDefault());
+  th.addEventListener("drop",e=>{
+    e.preventDefault();
+    if(dragSrc!==th){
+      const parent=th.parentNode;
+      parent.insertBefore(dragSrc,th.nextSibling);
+      saveOrder();
+      loadPatients();
+    }
+  });
+});
+function getSavedOrder(){
+  const order=JSON.parse(localStorage.getItem("columnOrder")||"[]");
+  if(order.length===0){
+    return ["patientId","token","name","age","mobile","address","illness","timestamp"];
+  }
+  return order;
+}
+function saveOrder(){
+  const keys=Array.from(headerRow.children).map(th=>th.dataset.key);
+  localStorage.setItem("columnOrder",JSON.stringify(keys));
+}
+</script>
 </body>
 </html>
