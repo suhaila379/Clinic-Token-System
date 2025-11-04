@@ -63,8 +63,30 @@
       font-size: 14px;
       color: #888;
     }
+
+    /* Floating Doctor Login Button */
+    .doctor-login-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: linear-gradient(135deg,#0078d7,#00aaff);
+      color: white;
+      font-weight: 600;
+      border: none;
+      padding: 14px 22px;
+      border-radius: 30px;
+      box-shadow: 0 4px 25px rgba(0,0,0,0.15);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .doctor-login-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+
     @media (max-width:768px){
       .card {flex:1 1 100%;max-width:100%;}
+      .doctor-login-btn {padding:12px 18px;font-size:14px;}
     }
   </style>
 </head>
@@ -94,6 +116,11 @@
       <p>© 2025 Lucknow Health & Skin Care Centre</p>
     </footer>
   </div>
+
+  <!-- Floating Doctor Login Button -->
+  <button class="doctor-login-btn" onclick="window.location.href='doctor.html'">
+    👨‍⚕️ Doctor Login
+  </button>
 
   <!-- Firebase JS for live token updates -->
   <script type="module">
