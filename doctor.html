@@ -1,44 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Doctor Dashboard - Lucknow Health & Skin Care Centre</title>
   <style>
     body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
+      font-family: "Poppins", sans-serif;
       background: linear-gradient(135deg, #e3f2fd, #ffffff);
       color: #0a2540;
       text-align: center;
+      margin: 0;
       min-height: 100vh;
-      overflow-x: hidden;
     }
     .clinic-title {
       margin: 20px auto;
       padding: 12px 25px;
-      width: fit-content;
       border-radius: 18px;
       background: rgba(255,255,255,0.3);
       backdrop-filter: blur(15px);
       border: 1px solid rgba(255,255,255,0.6);
       box-shadow: 0 4px 15px rgba(0,153,255,0.25), inset 0 0 20px rgba(255,255,255,0.1);
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      transition: 0.3s;
+      width: fit-content;
       animation: fadeIn 1s ease;
     }
-    .clinic-title:hover { transform: scale(1.02); }
     @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
-
-    .subtitle { color: #4a90e2; margin-bottom: 10px; }
+    .subtitle { color: #4a90e2; }
 
     .token-display {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
-      margin: 20px auto;
+      display: flex; justify-content: center; gap: 15px;
+      flex-wrap: wrap; margin: 20px auto;
     }
     .glass-card {
       backdrop-filter: blur(15px);
@@ -48,32 +39,21 @@
       box-shadow: 0 4px 15px rgba(0,153,255,0.2), inset 0 0 20px rgba(255,255,255,0.1);
       padding: 15px 25px;
       width: 180px;
-      transition: all 0.3s ease;
+      transition: 0.3s;
     }
-    .glass-card:hover {
-      transform: scale(1.03);
-      box-shadow: 0 6px 25px rgba(0,153,255,0.3), inset 0 0 25px rgba(255,255,255,0.15);
-    }
-    .glass-card h3 { margin: 0; font-size: 1em; font-weight: 600; }
-    .glass-card p { font-size: 1.4em; margin: 5px 0 0; font-weight: 500; }
+    .glass-card:hover { transform: scale(1.03); }
 
-    .add-patient-btn {
+    .add-btn {
       background: rgba(255,255,255,0.25);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255,255,255,0.5);
-      padding: 12px 25px;
       border-radius: 30px;
       cursor: pointer;
       font-size: 1em;
       color: #0a2540;
+      padding: 12px 25px;
       box-shadow: 0 4px 12px rgba(0,153,255,0.2);
-      margin: 10px auto 25px;
-      display: inline-block;
-      transition: 0.3s;
-    }
-    .add-patient-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 20px rgba(0,153,255,0.35);
+      margin-bottom: 25px;
     }
 
     .modal {
@@ -81,135 +61,88 @@
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      justify-content: center; align-items: center;
       background: rgba(0,0,0,0.4);
-      z-index: 999;
+      justify-content: center; align-items: center;
     }
     .modal-content {
-      width: 90%;
-      max-width: 400px;
-      text-align: left;
-      padding: 20px;
-      position: relative;
-      border-radius: 18px;
       background: rgba(255,255,255,0.3);
       backdrop-filter: blur(15px);
       border: 1px solid rgba(255,255,255,0.6);
-      box-shadow: 0 4px 15px rgba(0,153,255,0.3);
+      border-radius: 18px;
+      padding: 20px;
+      max-width: 400px;
+      width: 90%;
+      text-align: left;
+      position: relative;
     }
-    .modal-content input, .modal-content textarea {
-      width: 100%;
-      margin: 6px 0;
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      outline: none;
+    .close-btn { position: absolute; top: 8px; right: 12px; cursor: pointer; }
+    input, textarea {
+      width: 100%; margin: 6px 0; padding: 10px;
+      border-radius: 10px; border: none; outline: none;
       font-size: 1em;
     }
-    .close-btn {
-      position: absolute;
-      right: 10px;
-      top: 8px;
-      font-size: 1.2em;
-      cursor: pointer;
-    }
-
     .table-container {
-      margin: 0 auto;
-      width: 95%;
-      max-width: 1000px;
-      overflow-x: auto;
+      margin: 0 auto; width: 95%; max-width: 1000px;
       background: rgba(255,255,255,0.25);
       backdrop-filter: blur(10px);
       border-radius: 20px;
       padding: 15px;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    th, td {
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.5);
-    }
-    th {
-      cursor: grab;
-      background: rgba(0,0,0,0.1);
-    }
-    tr:hover {
-      background: rgba(255,255,255,0.15);
-    }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.5); }
+    tr:hover { background: rgba(255,255,255,0.15); }
     .edit-btn, .delete-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1.1em;
-      margin: 0 5px;
+      background: none; border: none; cursor: pointer;
+      font-size: 1.1em; margin: 0 5px;
     }
     .edit-btn:hover { color: #0078ff; }
     .delete-btn:hover { color: #e60000; }
-
-    footer { margin: 20px; color: #333; font-size: 13px; }
-
-    @media(max-width:700px) {
-      .glass-card { width: 120px; padding: 10px; }
-      .glass-card p { font-size: 1.2em; }
-    }
   </style>
 </head>
 <body>
   <h1 class="clinic-title">Lucknow Health & Skin Care Centre</h1>
   <h2 class="subtitle">Doctor Dashboard</h2>
 
-  <!-- Token Summary -->
   <div class="token-display">
     <div class="glass-card"><h3>Current</h3><p id="currentToken">--</p></div>
     <div class="glass-card"><h3>Next</h3><p id="nextToken">--</p></div>
     <div class="glass-card"><h3>Remaining</h3><p id="remainingToken">--</p></div>
   </div>
 
-  <button class="add-patient-btn" onclick="openModal()">➕ Add Patient</button>
+  <button class="add-btn" onclick="openModal()">➕ Add Patient</button>
 
   <!-- Modal -->
   <div id="modal" class="modal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeModal()">✖</span>
       <h3 id="modalTitle">Add Patient</h3>
-      <input id="pName" placeholder="Patient Name" />
-      <input id="pAge" placeholder="Age" type="number" />
-      <input id="pMobile" placeholder="Mobile" />
-      <input id="pAddress" placeholder="Address" />
+      <input id="pName" placeholder="Name">
+      <input id="pAge" placeholder="Age" type="number">
+      <input id="pMobile" placeholder="Mobile">
+      <input id="pAddress" placeholder="Address">
       <textarea id="pIllness" placeholder="Illness / Description"></textarea>
-      <button id="saveBtn" onclick="savePatient()">Save</button>
+      <button class="add-btn" onclick="savePatient()">Save</button>
     </div>
   </div>
 
   <div class="table-container">
-    <input id="searchBox" placeholder="Search..." onkeyup="searchTable()" style="margin-bottom:10px;padding:8px;border-radius:8px;width:60%;">
-    <button onclick="exportCSV()" class="add-patient-btn" style="padding:8px 16px;font-size:0.9em;">Export CSV</button>
-
-    <table id="patientTable">
+    <table>
       <thead>
-        <tr id="tableHeader">
-          <th draggable="true">Patient ID</th>
-          <th draggable="true">Token</th>
-          <th draggable="true">Name</th>
-          <th draggable="true">Age</th>
-          <th draggable="true">Mobile</th>
-          <th draggable="true">Address</th>
-          <th draggable="true">Illness</th>
-          <th draggable="true">Time</th>
+        <tr>
+          <th>Patient ID</th>
+          <th>Token</th>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Mobile</th>
+          <th>Address</th>
+          <th>Illness</th>
+          <th>Time</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
     </table>
   </div>
-
-  <footer>© 2025 Lucknow Health & Skin Care Centre</footer>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -228,44 +161,42 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const auth = getAuth(app);
-
     signInWithEmailAndPassword(auth, "doctor@lhascc.com", "LHASCC");
 
     const modal = document.getElementById("modal");
-    const body = document.getElementById("tableBody");
-    const headerRow = document.getElementById("tableHeader");
+    const tableBody = document.getElementById("tableBody");
     let editKey = null;
 
-    window.openModal = () => {
+    window.openModal = function() {
       modal.style.display = "flex";
       document.getElementById("modalTitle").textContent = "Add Patient";
       ["pName","pAge","pMobile","pAddress","pIllness"].forEach(id=>document.getElementById(id).value="");
       editKey = null;
     };
-    window.closeModal = () => modal.style.display = "none";
+    window.closeModal = function() { modal.style.display = "none"; };
 
-    onValue(ref(db,"tokens/current"), s => currentToken.textContent = s.val()||"--");
-    onValue(ref(db,"tokens/next"), s => nextToken.textContent = s.val()||"--");
-    onValue(ref(db,"tokens/remaining"), s => remainingToken.textContent = s.val()||"--");
+    onValue(ref(db,"tokens/current"), s => document.getElementById("currentToken").textContent = s.val()||"--");
+    onValue(ref(db,"tokens/next"), s => document.getElementById("nextToken").textContent = s.val()||"--");
+    onValue(ref(db,"tokens/remaining"), s => document.getElementById("remainingToken").textContent = s.val()||"--");
 
-    window.savePatient = async () => {
+    window.savePatient = async function() {
       const name = pName.value.trim();
       if (!name) return alert("Please enter patient name");
-      const snap = await get(ref(db, "patients"));
-      const data = snap.val() || {};
-      const id = editKey ? editKey : Object.keys(data).length + 1;
+      const snap = await get(ref(db,"patients"));
+      const data = snap.val()||{};
+      const id = editKey ? editKey : Object.keys(data).length+1;
       const token = id;
-      const info = { id, token, name, age: pAge.value, mobile: pMobile.value, address: pAddress.value, illness: pIllness.value, time: new Date().toLocaleString() };
-      await set(ref(db, "patients/" + id), info);
-      await set(ref(db, "tokens/current"), token);
-      await set(ref(db, "tokens/next"), token + 1);
-      await set(ref(db, "tokens/remaining"), Object.keys(data).length + 1);
+      const info = { id, token, name, age:pAge.value, mobile:pMobile.value, address:pAddress.value, illness:pIllness.value, time:new Date().toLocaleString() };
+      await set(ref(db,"patients/"+id), info);
+      await set(ref(db,"tokens/current"), token);
+      await set(ref(db,"tokens/next"), token+1);
+      await set(ref(db,"tokens/remaining"), Object.keys(data).length+1);
       closeModal();
     };
 
-    onValue(ref(db, "patients"), (snap) => {
+    onValue(ref(db,"patients"), snap => {
       const patients = snap.val() || {};
-      body.innerHTML = "";
+      tableBody.innerHTML = "";
       Object.values(patients).forEach(p => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -273,79 +204,27 @@
           <td>${p.age}</td><td>${p.mobile}</td><td>${p.address}</td>
           <td>${p.illness}</td><td>${p.time}</td>
           <td>
-            <button class='edit-btn' onclick='editPatient(${p.id})'>✏️</button>
-            <button class='delete-btn' onclick='deletePatient(${p.id})'>🗑️</button>
+            <button class="edit-btn" onclick="editPatient(${p.id})">✏️</button>
+            <button class="delete-btn" onclick="deletePatient(${p.id})">🗑️</button>
           </td>`;
-        body.appendChild(tr);
+        tableBody.appendChild(tr);
       });
     });
 
-    // Global edit/delete functions
-    function editPatient(id) {
-      get(ref(db, "patients/" + id)).then((s) => {
-        const d = s.val();
-        if (!d) return;
+    window.editPatient = function(id) {
+      get(ref(db,"patients/"+id)).then(s => {
+        const d = s.val(); if (!d) return;
         editKey = id;
         modal.style.display = "flex";
         modalTitle.textContent = "Edit Patient";
-        pName.value = d.name;
-        pAge.value = d.age;
-        pMobile.value = d.mobile;
-        pAddress.value = d.address;
-        pIllness.value = d.illness;
+        pName.value = d.name; pAge.value = d.age; pMobile.value = d.mobile;
+        pAddress.value = d.address; pIllness.value = d.illness;
       });
-    }
-
-    function deletePatient(id) {
-      if (confirm("Delete this record?")) {
-        remove(ref(db, "patients/" + id)).then(() => alert("Record deleted successfully!"));
-      }
-    }
-
-    window.editPatient = editPatient;
-    window.deletePatient = deletePatient;
-
-    window.searchTable = () => {
-      const val = searchBox.value.toLowerCase();
-      [...body.children].forEach(r => r.style.display = r.textContent.toLowerCase().includes(val) ? "" : "none");
     };
 
-    window.exportCSV = () => {
-      let csv = "ID,Token,Name,Age,Mobile,Address,Illness,Time\n";
-      [...body.children].forEach(r => {
-        const cols = [...r.children].slice(0,8).map(td => td.textContent);
-        csv += cols.join(",") + "\n";
-      });
-      const blob = new Blob([csv], { type: "text/csv" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "patients.csv"; a.click();
+    window.deletePatient = function(id) {
+      if (confirm("Delete this record?")) remove(ref(db,"patients/"+id));
     };
-
-    // Column reorder
-    let dragSrc = null;
-    [...headerRow.children].forEach(th => {
-      th.addEventListener("dragstart", e => { dragSrc = th; e.dataTransfer.effectAllowed = "move"; });
-      th.addEventListener("dragover", e => e.preventDefault());
-      th.addEventListener("drop", async e => {
-        e.preventDefault();
-        if (dragSrc !== th && th.textContent !== "Actions") {
-          headerRow.insertBefore(dragSrc, th);
-          const order = [...headerRow.children].map(th => th.textContent);
-          await set(ref(db, "settings/columnOrder"), order);
-        }
-      });
-    });
-
-    onValue(ref(db, "settings/columnOrder"), (s) => {
-      const order = s.val();
-      if (!order) return;
-      const current = [...headerRow.children];
-      order.forEach(text => {
-        const match = current.find(th => th.textContent === text);
-        if (match) headerRow.appendChild(match);
-      });
-    });
   </script>
 </body>
 </html>
