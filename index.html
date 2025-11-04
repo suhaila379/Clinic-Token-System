@@ -1,25 +1,81 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lucknow Health & Skin Care Centre</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patient Queue – Lucknow Health & Skin Care Centre</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background: linear-gradient(135deg,#eaf5ff,#f8fbff);
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #004d99;
+    }
+    .token-row {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .card {
+      flex: 1 1 220px;
+      max-width: 260px;
+      background: rgba(255,255,255,0.6);
+      border-radius: 16px;
+      box-shadow: 0 4px 25px rgba(0,0,0,0.08);
+      text-align: center;
+      padding: 20px;
+      backdrop-filter: blur(12px);
+      transition: transform 0.2s ease;
+    }
+    .card:hover { transform: translateY(-4px); }
+    .card h3 {
+      font-size: 16px;
+      color: #0066cc;
+      margin-bottom: 10px;
+    }
+    .card p {
+      font-size: 32px;
+      font-weight: 700;
+      color: #333;
+      margin: 0;
+    }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 14px;
+      color: #888;
+    }
+    @media (max-width:768px){
+      .card {flex:1 1 100%;max-width:100%;}
+    }
+  </style>
 </head>
 <body>
-  <div class="sidebar">
-    <h2>Lucknow Health & Skin Care Centre</h2>
-    <div>
-      <a href="index.html">Patient View</a>
-      <a href="doctor.html">Doctor Dashboard</a>
-    </div>
-  </div>
-  <div class="main">
+  <div class="container">
     <div class="header">
-      <h1>Patient Queue</h1>
+      <h1>Lucknow Health & Skin Care Centre</h1>
+      <h2 style="color:#333;font-size:22px;">Patient Queue</h2>
     </div>
-    <div class="token-cards">
+
+    <div class="token-row">
       <div class="card">
         <h3>Current Token</h3>
         <p id="currentToken">--</p>
@@ -33,28 +89,47 @@
         <p id="remainingTokens">--</p>
       </div>
     </div>
+
+    <footer>
+      <p>© 2025 Lucknow Health & Skin Care Centre</p>
+    </footer>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
-  <script>
-    // Firebase Configuration (Replace with your config)
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      databaseURL: "YOUR_DATABASE_URL",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+  <!-- Firebase JS for live token updates -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-    // Placeholder for live updates
-    document.getElementById('currentToken').innerText = "101";
-    document.getElementById('nextToken').innerText = "102";
-    document.getElementById('remainingTokens').innerText = "5";
+    const firebaseConfig = {
+      apiKey: "AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
+      authDomain: "clinic-token-system-e1430.firebaseapp.com",
+      databaseURL: "https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "clinic-token-system-e1430",
+      storageBucket: "clinic-token-system-e1430.firebasestorage.app",
+      messagingSenderId: "1014958043227",
+      appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const currentTokenEl = document.getElementById("currentToken");
+    const nextTokenEl = document.getElementById("nextToken");
+    const remainingEl = document.getElementById("remainingTokens");
+
+    const currentTokenRef = ref(db, "tokens/current");
+    const nextTokenRef = ref(db, "tokens/next");
+    const remainingRef = ref(db, "tokens/remaining");
+
+    onValue(currentTokenRef, (snapshot) => {
+      currentTokenEl.textContent = snapshot.val() ?? "--";
+    });
+    onValue(nextTokenRef, (snapshot) => {
+      nextTokenEl.textContent = snapshot.val() ?? "--";
+    });
+    onValue(remainingRef, (snapshot) => {
+      remainingEl.textContent = snapshot.val() ?? "--";
+    });
   </script>
 </body>
 </html>
