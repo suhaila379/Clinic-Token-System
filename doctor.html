@@ -4,26 +4,213 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Doctor Dashboard - Lucknow Health & Skin Care Centre</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e3f2fd, #ffffff);
+      color: #0a2540;
+      text-align: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .clinic-title {
+      margin-top: 20px;
+      font-size: 1.8em;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .subtitle {
+      color: #4a90e2;
+      margin-bottom: 10px;
+    }
+    .token-display {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin: 20px auto;
+    }
+    .glass-card {
+      backdrop-filter: blur(15px);
+      background: rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 18px;
+      box-shadow: 0 4px 15px rgba(0, 153, 255, 0.2), inset 0 0 20px rgba(255,255,255,0.1);
+      padding: 15px 25px;
+      width: 180px;
+      transition: all 0.3s ease;
+    }
+    .glass-card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 25px rgba(0,153,255,0.3), inset 0 0 25px rgba(255,255,255,0.15);
+    }
+    .glass-card h3 {
+      margin: 0;
+      font-size: 1em;
+      font-weight: 600;
+    }
+    .glass-card p {
+      font-size: 1.4em;
+      margin: 5px 0 0;
+      font-weight: 500;
+    }
+
+    .add-patient-btn {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.5);
+      padding: 12px 25px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 1em;
+      color: #0a2540;
+      box-shadow: 0 4px 12px rgba(0, 153, 255, 0.2);
+      margin: 10px auto 25px;
+      display: inline-block;
+      transition: 0.3s;
+    }
+    .add-patient-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0, 153, 255, 0.35);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      justify-content: center; align-items: center;
+      background: rgba(0,0,0,0.4);
+      z-index: 999;
+    }
+    .modal-content {
+      width: 90%;
+      max-width: 400px;
+      text-align: left;
+      padding: 20px;
+      position: relative;
+    }
+    .modal-content input, .modal-content textarea {
+      width: 100%;
+      margin: 6px 0;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 1em;
+    }
+    .close-btn {
+      position: absolute;
+      right: 10px;
+      top: 8px;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+
+    .table-container {
+      margin: 0 auto;
+      width: 95%;
+      max-width: 1000px;
+      overflow-x: auto;
+      background: rgba(255,255,255,0.25);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 15px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.5);
+    }
+    th {
+      cursor: grab;
+      background: rgba(0,0,0,0.1);
+    }
+    tr:hover {
+      background: rgba(255,255,255,0.15);
+    }
+    .edit-btn, .delete-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1em;
+      margin: 0 5px;
+    }
+    .edit-btn:hover { color: #0078ff; }
+    .delete-btn:hover { color: #e60000; }
+
+    @media(max-width:700px) {
+      .glass-card { width: 120px; padding: 10px; }
+      .glass-card p { font-size: 1.2em; }
+    }
+  </style>
+</head>
+<body>
+  <h1 class="clinic-title">Lucknow Health & Skin Care Centre</h1>
+  <h2 class="subtitle">Doctor Dashboard</h2>
+
+  <!-- Token Summary -->
+  <div class="token-display">
+    <div class="glass-card"><h3>Current</h3><p id="currentToken">--</p></div>
+    <div class="glass-card"><h3>Next</h3><p id="nextToken">--</p></div>
+    <div class="glass-card"><h3>Remaining</h3><p id="remainingToken">--</p></div>
+  </div>
+
+  <!-- Add Patient -->
+  <button class="add-patient-btn" onclick="openModal()">➕ Add Patient</button>
+
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content glass-card">
+      <span class="close-btn" onclick="closeModal()">✖</span>
+      <h3 id="modalTitle">Add Patient</h3>
+      <input id="pName" placeholder="Patient Name" />
+      <input id="pAge" placeholder="Age" type="number" />
+      <input id="pMobile" placeholder="Mobile" />
+      <input id="pAddress" placeholder="Address" />
+      <textarea id="pIllness" placeholder="Illness / Description"></textarea>
+      <button id="saveBtn" onclick="savePatient()">Save</button>
+    </div>
+  </div>
+
+  <!-- Search + Table -->
+  <div class="table-container">
+    <input id="searchBox" placeholder="Search..." onkeyup="searchTable()" style="margin-bottom:10px;padding:8px;border-radius:8px;width:60%;">
+    <button onclick="exportCSV()" class="add-patient-btn" style="padding:8px 16px;font-size:0.9em;">Export CSV</button>
+
+    <table id="patientTable">
+      <thead>
+        <tr id="tableHeader">
+          <th draggable="true">Patient ID</th>
+          <th draggable="true">Token</th>
+          <th draggable="true">Name</th>
+          <th draggable="true">Age</th>
+          <th draggable="true">Mobile</th>
+          <th draggable="true">Address</th>
+          <th draggable="true">Illness</th>
+          <th draggable="true">Time</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <footer style="margin:25px;color:#333;font-size:13px;">© 2025 Lucknow Health & Skin Care Centre</footer>
+
+  <!-- Firebase Logic -->
   <script type="module">
-    // 🔥 Import Firebase SDK
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import {
-      getDatabase,
-      ref,
-      push,
-      set,
-      onValue,
-      remove,
-      update
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, set, get, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    import {
-      getAuth,
-      signInWithEmailAndPassword
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-    // 🔑 Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
       authDomain: "clinic-token-system-e1430.firebaseapp.com",
@@ -33,194 +220,116 @@
       messagingSenderId: "1014958043227",
       appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
     };
-
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const auth = getAuth(app);
 
-    // Login Protection
-    window.onload = function () {
-      const email = "doctor@lhascc.com";
-      const password = "LHASCC";
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => console.log("Doctor logged in automatically"))
-        .catch((error) => console.error(error));
+    signInWithEmailAndPassword(auth, "doctor@lhascc.com", "LHASCC");
+
+    const modal = document.getElementById("modal");
+    const body = document.getElementById("tableBody");
+    const headerRow = document.getElementById("tableHeader");
+    let editKey = null;
+
+    window.openModal = () => {
+      modal.style.display = "flex";
+      document.getElementById("modalTitle").textContent = "Add Patient";
+      ["pName","pAge","pMobile","pAddress","pIllness"].forEach(id=>document.getElementById(id).value="");
+      editKey = null;
     };
+    window.closeModal = () => modal.style.display = "none";
 
-    // Add Patient Modal
-    function openModal() {
-      document.getElementById("addPatientModal").style.display = "flex";
-    }
-    function closeModal() {
-      document.getElementById("addPatientModal").style.display = "none";
-    }
+    onValue(ref(db,"tokens/current"), s => currentToken.textContent = s.val()||"--");
+    onValue(ref(db,"tokens/next"), s => nextToken.textContent = s.val()||"--");
+    onValue(ref(db,"tokens/remaining"), s => remainingToken.textContent = s.val()||"--");
 
-    // Add New Patient
-    window.addPatient = function () {
-      const name = document.getElementById("name").value.trim();
-      const age = document.getElementById("age").value.trim();
-      const mobile = document.getElementById("mobile").value.trim();
-      const address = document.getElementById("address").value.trim();
-      const illness = document.getElementById("illness").value.trim();
-
-      if (!name || !mobile) {
-        alert("Please enter patient name and mobile number.");
-        return;
-      }
-
-      const patientsRef = ref(db, "patients");
-      const newPatientRef = push(patientsRef);
-
-      const patientData = {
-        id: newPatientRef.key.slice(-5),
-        name,
-        age,
-        mobile,
-        address,
-        illness,
-        token: Date.now().toString().slice(-4),
-        time: new Date().toISOString(),
-      };
-
-      set(newPatientRef, patientData);
+    window.savePatient = async () => {
+      const name = pName.value.trim();
+      if (!name) return alert("Please enter patient name");
+      const snap = await get(ref(db, "patients"));
+      const data = snap.val() || {};
+      const id = editKey ? editKey : Object.keys(data).length + 1;
+      const token = id;
+      const info = { id, token, name, age: pAge.value, mobile: pMobile.value, address: pAddress.value, illness: pIllness.value, time: new Date().toLocaleString() };
+      await set(ref(db, "patients/" + id), info);
+      await set(ref(db, "tokens/current"), token);
+      await set(ref(db, "tokens/next"), token + 1);
+      await set(ref(db, "tokens/remaining"), Object.keys(data).length + 1);
       closeModal();
     };
 
-    // Display Patients
-    const tableBody = document.getElementById("patientTableBody");
-    const patientsRef = ref(db, "patients");
-
-    onValue(patientsRef, (snapshot) => {
-      tableBody.innerHTML = "";
-      snapshot.forEach((child) => {
-        const p = child.val();
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${p.id || "-"}</td>
-          <td>${p.token || "-"}</td>
-          <td>${p.name || "-"}</td>
-          <td>${p.age || "-"}</td>
-          <td>${p.mobile || "-"}</td>
-          <td>${p.address || "-"}</td>
-          <td>${p.illness || "-"}</td>
-          <td>${p.time ? new Date(p.time).toLocaleString() : "-"}</td>
+    onValue(ref(db, "patients"), (snap) => {
+      const patients = snap.val() || {};
+      body.innerHTML = "";
+      Object.values(patients).forEach(p => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p.id}</td><td>${p.token}</td><td>${p.name}</td>
+          <td>${p.age}</td><td>${p.mobile}</td><td>${p.address}</td>
+          <td>${p.illness}</td><td>${p.time}</td>
           <td>
-            <button class="edit-btn" onclick="editPatient('${child.key}')">✏️</button>
-            <button class="delete-btn" onclick="deletePatient('${child.key}')">🗑️</button>
-          </td>
-        `;
-        tableBody.appendChild(row);
+            <button class='edit-btn' onclick='editPatient(${p.id})'>✏️</button>
+            <button class='delete-btn' onclick='deletePatient(${p.id})'>🗑️</button>
+          </td>`;
+        body.appendChild(tr);
       });
     });
 
-    // Edit Patient
-    window.editPatient = function (id) {
-      const newIllness = prompt("Update Illness / Description:");
-      if (!newIllness) return;
-      const patientRef = ref(db, `patients/${id}`);
-      update(patientRef, { illness: newIllness });
+    window.editPatient = async (id) => {
+      const s = await get(ref(db, "patients/" + id));
+      const d = s.val(); if (!d) return;
+      editKey = id;
+      modal.style.display = "flex";
+      modalTitle.textContent = "Edit Patient";
+      pName.value = d.name; pAge.value = d.age; pMobile.value = d.mobile;
+      pAddress.value = d.address; pIllness.value = d.illness;
     };
 
-    // Delete Patient
-    window.deletePatient = function (id) {
-      if (confirm("Are you sure you want to delete this patient?")) {
-        const patientRef = ref(db, `patients/${id}`);
-        remove(patientRef);
-      }
+    window.deletePatient = async (id) => {
+      if (confirm("Delete this record?")) remove(ref(db, "patients/" + id));
     };
 
-    // Export CSV
-    window.exportCSV = function () {
-      let csv = "Patient ID,Token,Name,Age,Mobile,Address,Illness,Time\n";
-      document.querySelectorAll("#patientTableBody tr").forEach((row) => {
-        const cols = row.querySelectorAll("td");
-        const data = Array.from(cols).map((td) => td.textContent);
-        csv += data.join(",") + "\n";
+    window.searchTable = () => {
+      const val = searchBox.value.toLowerCase();
+      [...body.children].forEach(r => r.style.display = r.textContent.toLowerCase().includes(val) ? "" : "none");
+    };
+
+    window.exportCSV = () => {
+      let csv = "ID,Token,Name,Age,Mobile,Address,Illness,Time\n";
+      [...body.children].forEach(r => {
+        const cols = [...r.children].slice(0,8).map(td => td.textContent);
+        csv += cols.join(",") + "\n";
       });
       const blob = new Blob([csv], { type: "text/csv" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "patients.csv";
-      link.click();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "patients.csv"; a.click();
     };
-  </script>
-</head>
 
-<body>
-  <h1 class="clinic-title">Lucknow Health & Skin Care Centre</h1>
-  <h2 class="subtitle">Doctor Dashboard</h2>
-
-  <div class="token-display">
-    <div class="glass-card">
-      <h3>Current Token</h3>
-      <p id="currentToken">--</p>
-    </div>
-    <div class="glass-card">
-      <h3>Next Token</h3>
-      <p id="nextToken">--</p>
-    </div>
-    <div class="glass-card">
-      <h3>Remaining</h3>
-      <p id="remainingToken">--</p>
-    </div>
-  </div>
-
-  <button class="add-patient-btn" onclick="openModal()">➕ Add Patient</button>
-
-  <!-- Add Patient Modal -->
-  <div id="addPatientModal" class="modal">
-    <div class="modal-content glass-card">
-      <span class="close-btn" onclick="closeModal()">✖</span>
-      <h3>Add New Patient</h3>
-      <input type="text" id="name" placeholder="Patient Name" />
-      <input type="number" id="age" placeholder="Age" />
-      <input type="text" id="mobile" placeholder="Mobile Number" />
-      <input type="text" id="address" placeholder="Address" />
-      <textarea id="illness" placeholder="Illness / Description"></textarea>
-      <button onclick="addPatient()">Add Patient</button>
-    </div>
-  </div>
-
-  <div class="table-container">
-    <input
-      type="text"
-      id="searchInput"
-      placeholder="Search patient..."
-      onkeyup="searchPatient()"
-      style="margin-bottom: 10px; padding: 8px; border-radius: 8px; width: 60%;"
-    />
-    <button onclick="exportCSV()" class="add-patient-btn" style="padding: 10px 20px;">Export CSV</button>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Patient ID</th>
-          <th>Token</th>
-          <th>Name</th>
-          <th>Age</th>
-          <th>Mobile</th>
-          <th>Address</th>
-          <th>Illness</th>
-          <th>Time</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="patientTableBody"></tbody>
-    </table>
-  </div>
-
-  <script>
-    function searchPatient() {
-      const input = document.getElementById("searchInput").value.toLowerCase();
-      document.querySelectorAll("#patientTableBody tr").forEach((row) => {
-        const match = row.textContent.toLowerCase().includes(input);
-        row.style.display = match ? "" : "none";
+    // Column reorder
+    let dragSrc = null;
+    [...headerRow.children].forEach(th => {
+      th.addEventListener("dragstart", e => { dragSrc = th; e.dataTransfer.effectAllowed = "move"; });
+      th.addEventListener("dragover", e => e.preventDefault());
+      th.addEventListener("drop", async e => {
+        e.preventDefault();
+        if (dragSrc !== th && th.textContent !== "Actions") {
+          headerRow.insertBefore(dragSrc, th);
+          const order = [...headerRow.children].map(th => th.textContent);
+          await set(ref(db, "settings/columnOrder"), order);
+        }
       });
-    }
-  </script>
+    });
 
-  <footer style="margin: 20px 0; color: #333; font-size: 14px;">
-    © 2025 Lucknow Health & Skin Care Centre
-  </footer>
+    onValue(ref(db, "settings/columnOrder"), (s) => {
+      const order = s.val();
+      if (!order) return;
+      const current = [...headerRow.children];
+      order.forEach(text => {
+        const match = current.find(th => th.textContent === text);
+        if (match) headerRow.appendChild(match);
+      });
+    });
+  </script>
 </body>
 </html>
