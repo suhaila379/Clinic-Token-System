@@ -9,29 +9,41 @@
 <body class="patient-body">
 <div class="container">
   <h1 class="clinic-title">Lucknow Health & Skin Care Centre</h1>
-  <h2 class="subtitle">Get Your Token</h2>
+  <h2 class="subtitle">Get Your Token / अपना टोकन प्राप्त करें</h2>
 
   <div class="form-card">
-    <input id="pName" placeholder="Patient Name" required />
-    <input id="pAge" placeholder="Age" type="number" />
-    <input id="pMobile" placeholder="Mobile Number" type="tel" />
-    <input id="pAddress" placeholder="Address" />
-    <textarea id="pIllness" placeholder="Illness / Description"></textarea>
-    <button id="generateBtn">Generate Token</button>
+    <label>Patient Name / मरीज का नाम</label>
+    <input id="pName" placeholder="Enter patient name / मरीज का नाम दर्ज करें" required />
+
+    <label>Age / उम्र</label>
+    <input id="pAge" placeholder="Age / उम्र" type="number" />
+
+    <label>Mobile Number / मोबाइल नंबर</label>
+    <input id="pMobile" placeholder="Enter mobile number / मोबाइल नंबर दर्ज करें" type="tel" />
+
+    <label>Address / पता</label>
+    <input id="pAddress" placeholder="Enter address / पता दर्ज करें" />
+
+    <label>Illness / बीमारी का विवरण</label>
+    <textarea id="pIllness" placeholder="Describe illness / बीमारी का विवरण दें"></textarea>
+
+    <button id="generateBtn">Generate Token / टोकन बनाएं</button>
   </div>
 
   <div class="token-display" id="tokenDisplay" style="display:none;">
     <div class="token-card glass-card">
-      <h3>Your Token Number</h3>
+      <h3>Your Token Number / आपका टोकन नंबर</h3>
       <p id="patientToken">--</p>
     </div>
     <div class="token-card glass-card">
-      <h3>Currently Serving</h3>
+      <h3>Currently Serving / वर्तमान सेवा टोकन</h3>
       <p id="currentToken">--</p>
     </div>
   </div>
 
-  <button class="doctor-login-btn" onclick="window.location.href='doctor.html'">👨‍⚕️ Doctor Login</button>
+  <button class="doctor-login-btn" onclick="window.location.href='doctor.html'">
+    👨‍⚕️ Doctor Login / डॉक्टर लॉगिन
+  </button>
 </div>
 
 <footer class="footer">© 2025 Lucknow Health & Skin Care Centre</footer>
@@ -66,7 +78,7 @@ onValue(ref(db, "tokens/current"), (snapshot) => {
 generateBtn.onclick = async () => {
   const name = pName.value.trim();
   if (!name) {
-    alert("Please enter patient name.");
+    alert("Please enter patient name / कृपया मरीज का नाम दर्ज करें");
     return;
   }
   const snap = await get(child(ref(db), "patients"));
