@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Doctor Dashboard – Lucknow Health & Skin Care Centre</title>
 <style>
   *{box-sizing:border-box;}
@@ -12,7 +12,9 @@
     background:linear-gradient(135deg,#e6f2ff,#f8fbff);
     color:#103a6e;
     min-height:100vh;
-    display:flex;flex-direction:column;align-items:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
   }
   .clinic-header{
     margin-top:20px;
@@ -59,7 +61,6 @@
   .edit-btn{color:#2563eb;}
   .delete-btn{color:#dc2626;}
   .restore-btn{color:#10b981;}
-  /* modal */
   .modal-bg{
     display:none;position:fixed;top:0;left:0;right:0;bottom:0;
     background:rgba(0,0,0,0.25);backdrop-filter:blur(4px);
@@ -79,6 +80,16 @@
     width:100%;margin-bottom:10px;padding:8px;
     border-radius:8px;border:1px solid #cfd9e6;
   }
+  footer{
+    margin-top:auto;
+    width:100%;
+    text-align:center;
+    padding:10px 0;
+    font-size:0.9rem;
+    color:#ffffff;
+    background:linear-gradient(to right,#79b6f3,#a8d1ff);
+    box-shadow:0 -2px 10px rgba(0,0,0,0.05);
+  }
   @media(max-width:768px){
     .token-card{min-width:90px;padding:8px 10px;}
     .token-value{font-size:1.1rem;}
@@ -87,40 +98,35 @@
 </style>
 </head>
 <body>
-  <div id="loginBox" class="modal" style="margin-top:100px;">
-    <h3>Doctor Login</h3>
-    <input type="email" id="loginEmail" placeholder="Email">
-    <input type="password" id="loginPass" placeholder="Password">
-    <button class="add-btn" onclick="login()">Login</button>
+  <div class="clinic-header">Lucknow Health & Skin Care Centre</div>
+  <h2>Doctor Dashboard</h2>
+
+  <div class="token-cards">
+    <div class="token-card"><h3>Current</h3><div class="token-value" id="currentToken">--</div></div>
+    <div class="token-card"><h3>Next</h3><div class="token-value" id="nextToken">--</div></div>
+    <div class="token-card"><h3>Remaining</h3><div class="token-value" id="remainingTokens">--</div></div>
   </div>
 
-  <div id="dashboard" style="display:none;flex-direction:column;align-items:center;width:100%;">
-    <div class="clinic-header">Lucknow Health & Skin Care Centre</div>
-    <h2>Doctor Dashboard</h2>
-    <div class="token-cards">
-      <div class="token-card"><h3>Current</h3><div class="token-value" id="currentToken">--</div></div>
-      <div class="token-card"><h3>Next</h3><div class="token-value" id="nextToken">--</div></div>
-      <div class="token-card"><h3>Remaining</h3><div class="token-value" id="remainingTokens">--</div></div>
-    </div>
-    <button class="add-btn" onclick="openAdd()">➕ Add Patient</button>
+  <button class="add-btn" onclick="openAdd()">➕ Add Patient</button>
 
-    <div class="table-container">
-      <table>
-        <thead><tr><th>Patient ID</th><th>Token</th><th>Name</th><th>Age</th><th>Mobile</th><th>Address</th><th>Illness</th><th>Time</th><th>Actions</th></tr></thead>
-        <tbody id="patientList"></tbody>
-      </table>
-    </div>
-
-    <button class="add-btn" onclick="toggleDeleted()">🗂 View Deleted History</button>
-    <div id="deletedSection" style="display:none;width:95%;" class="table-container">
-      <table>
-        <thead><tr><th>ID</th><th>Token</th><th>Name</th><th>Actions</th></tr></thead>
-        <tbody id="deletedList"></tbody>
-      </table>
-    </div>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr><th>Patient ID</th><th>Token</th><th>Name</th><th>Age</th>
+        <th>Mobile</th><th>Address</th><th>Illness</th><th>Time</th><th>Actions</th></tr>
+      </thead>
+      <tbody id="patientList"></tbody>
+    </table>
   </div>
 
-  <!-- Add/Edit Modal -->
+  <button class="add-btn" onclick="toggleDeleted()">🗂 View Deleted History</button>
+  <div id="deletedSection" style="display:none;width:95%;" class="table-container">
+    <table>
+      <thead><tr><th>ID</th><th>Token</th><th>Name</th><th>Actions</th></tr></thead>
+      <tbody id="deletedList"></tbody>
+    </table>
+  </div>
+
   <div class="modal-bg" id="modalBg">
     <div class="modal">
       <span class="close-btn" onclick="closeModal()">✖</span>
@@ -134,10 +140,11 @@
     </div>
   </div>
 
+  <footer>© 2025 Lucknow Health & Skin Care Centre</footer>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getDatabase, ref, push, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey:"AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
@@ -151,32 +158,18 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-  const auth = getAuth(app);
 
   const patientList=document.getElementById("patientList");
   const deletedList=document.getElementById("deletedList");
   const modalBg=document.getElementById("modalBg");
   let editId=null;
 
-  function login(){
-    signInWithEmailAndPassword(auth,
-      document.getElementById("loginEmail").value,
-      document.getElementById("loginPass").value
-    ).then(()=>{
-      document.getElementById("loginBox").style.display="none";
-      document.getElementById("dashboard").style.display="flex";
-      loadPatients();
-    }).catch(()=>alert("Invalid credentials"));
-  }
-  window.login=login;
-
   function openAdd(){editId=null;document.getElementById("modalTitle").innerText="Add Patient";modalBg.style.display="flex";}
   function closeModal(){modalBg.style.display="none";}
   window.openAdd=openAdd;window.closeModal=closeModal;
 
   function savePatient(){
-    const name=pName.value.trim();
-    if(!name)return;
+    const name=pName.value.trim(); if(!name)return;
     const now=new Date().toISOString().split("T")[0];
     const obj={name,age:pAge.value,mobile:pMobile.value,address:pAddress.value,illness:pIllness.value,time:now};
     if(editId){
@@ -196,9 +189,9 @@
         const v=ch.val();
         const tr=document.createElement("tr");
         tr.innerHTML=`<td>${v.id.slice(-4)}</td><td>${v.token}</td><td>${v.name||""}</td><td>${v.age||""}</td><td>${v.mobile||""}</td>
-          <td>${v.address||""}</td><td>${v.illness||""}</td><td>${v.time||""}</td>
-          <td class='actions'><button class='edit-btn' onclick='editPatient("${v.id}")'>✏️</button>
-          <button class='delete-btn' onclick='deletePatient("${v.id}")'>🗑️</button></td>`;
+        <td>${v.address||""}</td><td>${v.illness||""}</td><td>${v.time||""}</td>
+        <td class='actions'><button class='edit-btn' onclick='editPatient("${v.id}")'>✏️</button>
+        <button class='delete-btn' onclick='deletePatient("${v.id}")'>🗑️</button></td>`;
         patientList.appendChild(tr);
       });
     });
@@ -214,6 +207,7 @@
       });
     });
   }
+  loadPatients();
 
   window.editPatient=function(id){
     editId=id;
@@ -241,9 +235,7 @@
     },{onlyOnce:true});
   }
 
-  window.permadelete=function(id){
-    remove(ref(db,"deleted/"+id));
-  }
+  window.permadelete=function(id){ remove(ref(db,"deleted/"+id)); }
 
   window.toggleDeleted=function(){
     const sec=document.getElementById("deletedSection");
