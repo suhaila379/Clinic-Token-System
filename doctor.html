@@ -20,10 +20,9 @@
     margin-top:20px;
     font-size:1.3rem;
     font-weight:600;
-    background:linear-gradient(to right,#79b6f3,#a8d1ff);
+    background:rgba(255,255,255,0.3);
     border-radius:20px;
-    padding:10px 28px;
-    color:white;
+    padding:8px 24px;
     backdrop-filter:blur(10px);
     box-shadow:0 4px 20px rgba(0,0,0,0.05);
   }
@@ -58,8 +57,8 @@
   table{width:100%;border-collapse:collapse;}
   th,td{padding:10px 14px;border-bottom:1px solid rgba(0,0,0,0.05);}
   th{background:rgba(255,255,255,0.5);backdrop-filter:blur(8px);}
-  td[contenteditable="true"]{background:rgba(255,255,255,0.6);}
   .actions button{background:none;border:none;cursor:pointer;font-size:1rem;}
+  .edit-btn{color:#2563eb;}
   .delete-btn{color:#dc2626;}
   .restore-btn{color:#10b981;}
   .modal-bg{
@@ -68,7 +67,7 @@
     justify-content:center;align-items:center;z-index:100;
   }
   .modal{
-    background:rgba(255,255,255,0.85);
+    background:rgba(255,255,255,0.75);
     border-radius:20px;padding:20px;min-width:300px;max-width:90%;
     box-shadow:0 4px 20px rgba(0,0,0,0.1);
     backdrop-filter:blur(15px);position:relative;
@@ -165,7 +164,7 @@
   const modalBg=document.getElementById("modalBg");
   let editKey=null;
 
-  function openAdd(){modalBg.style.display="flex";}
+  function openAdd(){editKey=null;document.getElementById("modalTitle").innerText="Add Patient";modalBg.style.display="flex";}
   function closeModal(){modalBg.style.display="none";}
   window.openAdd=openAdd;window.closeModal=closeModal;
 
@@ -173,18 +172,15 @@
     const name=pName.value.trim(); if(!name)return alert("Name required");
     const now=new Date().toISOString().split("T")[0];
     const obj={name,age:pAge.value,mobile:pMobile.value,address:pAddress.value,illness:pIllness.value,time:now};
-    const newRef=push(ref(db,"patients"));
-    await set(newRef,{id:newRef.key,token:Date.now(),...obj});
+    if(editKey){
+      await update(ref(db,"patients/"+editKey),obj);
+    }else{
+      const newRef=push(ref(db,"patients"));
+      await set(newRef,{id:newRef.key,token:Date.now(),...obj});
+    }
     modalBg.style.display="none";
   }
-
-  function makeEditable(td,key,field){
-    td.contentEditable=true;
-    td.addEventListener("blur",()=>{
-      const val=td.innerText.trim();
-      if(val!==""||field==="age") update(ref(db,"patients/"+key),{[field]:val});
-    });
-  }
+  window.savePatient=savePatient;
 
   function loadPatients(){
     onValue(ref(db,"patients"),snap=>{
@@ -192,19 +188,11 @@
       snap.forEach(ch=>{
         const key=ch.key,v=ch.val();
         const tr=document.createElement("tr");
-        tr.innerHTML=`
-        <td>${key.slice(-4)}</td>
-        <td>${v.token}</td>
-        <td>${v.name||""}</td>
-        <td>${v.age||""}</td>
-        <td>${v.mobile||""}</td>
-        <td>${v.address||""}</td>
-        <td>${v.illness||""}</td>
-        <td>${v.time||""}</td>
-        <td class='actions'><button class='delete-btn' onclick='deletePatient("${key}")'>🗑️</button></td>`;
+        tr.innerHTML=`<td>${key.slice(-4)}</td><td>${v.token}</td><td>${v.name||""}</td><td>${v.age||""}</td><td>${v.mobile||""}</td>
+        <td>${v.address||""}</td><td>${v.illness||""}</td><td>${v.time||""}</td>
+        <td class='actions'><button class='edit-btn' onclick='editPatient("${key}")'>✏️</button>
+        <button class='delete-btn' onclick='deletePatient("${key}")'>🗑️</button></td>`;
         patientList.appendChild(tr);
-        const fields=["name","age","mobile","address","illness"];
-        fields.forEach((f,i)=>makeEditable(tr.children[i+2],key,f));
       });
     });
     onValue(ref(db,"deleted"),snap=>{
@@ -221,6 +209,16 @@
   }
   loadPatients();
 
+  window.editPatient=function(key){
+    editKey=key;
+    get(ref(db,"patients/"+key)).then(snap=>{
+      const v=snap.val();
+      pName.value=v.name||"";pAge.value=v.age||"";pMobile.value=v.mobile||"";pAddress.value=v.address||"";pIllness.value=v.illness||"";
+      document.getElementById("modalTitle").innerText="Edit Patient";
+      modalBg.style.display="flex";
+    });
+  }
+
   window.deletePatient=function(key){
     get(ref(db,"patients/"+key)).then(snap=>{
       const v=snap.val(); if(!v)return;
@@ -228,6 +226,7 @@
       remove(ref(db,"patients/"+key));
     });
   }
+
   window.restore=function(key){
     get(ref(db,"deleted/"+key)).then(snap=>{
       const v=snap.val(); if(!v)return;
@@ -235,7 +234,9 @@
       remove(ref(db,"deleted/"+key));
     });
   }
+
   window.permadelete=function(key){ remove(ref(db,"deleted/"+key)); }
+
   window.toggleDeleted=function(){
     const sec=document.getElementById("deletedSection");
     sec.style.display=sec.style.display==="none"?"block":"none";
