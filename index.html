@@ -51,6 +51,10 @@
       border-radius: 10px;
       font-size: 1em;
       outline: none;
+      transition: box-shadow 0.3s ease;
+    }
+    input.error, textarea.error {
+      box-shadow: 0 0 8px 2px rgba(255, 0, 0, 0.6);
     }
     button {
       background: rgba(255,255,255,0.25);
@@ -87,7 +91,6 @@
     .glass-card h3 { margin: 0; font-size: 1em; font-weight: 600; }
     .glass-card p { font-size: 1.4em; margin: 5px 0 0; font-weight: 500; }
 
-    /* Doctor Login Button */
     .login-btn {
       margin: 25px auto;
       display: inline-block;
@@ -103,7 +106,6 @@
     }
     .login-btn:hover { box-shadow: 0 4px 15px rgba(0,153,255,0.3); }
 
-    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -125,15 +127,6 @@
       width: 90%;
       max-width: 350px;
     }
-    .modal-content input {
-      width: 80%;
-      margin: 8px 0;
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      font-size: 1em;
-      outline: none;
-    }
     .close-btn {
       position: absolute;
       right: 20px;
@@ -148,7 +141,6 @@
 <body>
   <h1 class="clinic-title">Lucknow Health & Skin Care Centre</h1>
 
-  <!-- Patient Form -->
   <div class="form-card" id="formCard">
     <h2>Get Your Token / अपना टोकन प्राप्त करें</h2>
     <input id="name" placeholder="Name / नाम" required>
@@ -159,7 +151,6 @@
     <button onclick="getToken()">Get Token</button>
   </div>
 
-  <!-- Token Display -->
   <div class="token-display" id="tokenSection" style="display:none;">
     <div class="glass-card">
       <h3>Your Token / आपका टोकन</h3>
@@ -171,12 +162,10 @@
     </div>
   </div>
 
-  <!-- Doctor Login -->
   <div>
     <button class="login-btn" onclick="openLogin()">👨‍⚕️ Doctor Login</button>
   </div>
 
-  <!-- Doctor Login Modal -->
   <div id="loginModal" class="modal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeLogin()">✖</span>
@@ -189,7 +178,6 @@
 
   <footer>© 2025 Lucknow Health & Skin Care Centre</footer>
 
-  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -209,49 +197,57 @@
     const db = getDatabase(app);
     const auth = getAuth(app);
 
-    // Live update for current serving token
     onValue(ref(db, "tokens/current"), snap => {
       document.getElementById("currentToken").textContent = snap.val() || "--";
     });
 
-    // Generate new token
     window.getToken = async () => {
-      const nameVal = name.value.trim();
-      const ageVal = age.value.trim();
-      const mobileVal = mobile.value.trim();
-      const addressVal = address.value.trim();
-      const illnessVal = illness.value.trim();
-      if (!nameVal || !mobileVal) return alert("Please fill all required fields / कृपया सभी आवश्यक विवरण भरें");
+      const fields = [name, age, mobile, address, illness];
+      let valid = true;
+      fields.forEach(f => {
+        f.classList.remove("error");
+        if (!f.value.trim()) {
+          f.classList.add("error");
+          valid = false;
+        }
+      });
+      if (!valid) {
+        setTimeout(() => fields.forEach(f => f.classList.remove("error")), 2000);
+        return;
+      }
 
       try {
         const snap = await get(ref(db, "patients"));
         const data = snap.val() || {};
         const ids = Object.keys(data).map(k => parseInt(k)).filter(n => !isNaN(n));
         const newId = ids.length ? Math.max(...ids) + 1 : 1;
+        const info = {
+          id: newId,
+          token: newId,
+          name: name.value.trim(),
+          age: age.value.trim(),
+          mobile: mobile.value.trim(),
+          address: address.value.trim(),
+          illness: illness.value.trim(),
+          time: new Date().toLocaleString()
+        };
 
-        const token = newId;
-        const info = { id: newId, token, name: nameVal, age: ageVal, mobile: mobileVal, address: addressVal, illness: illnessVal, time: new Date().toLocaleString() };
         await set(ref(db, "patients/" + newId), info);
-
-        // update token info
-        await set(ref(db, "tokens/current"), token);
-        await set(ref(db, "tokens/next"), token + 1);
+        await set(ref(db, "tokens/current"), newId);
+        await set(ref(db, "tokens/next"), newId + 1);
         await set(ref(db, "tokens/remaining"), newId);
 
         document.getElementById("formCard").style.display = "none";
         document.getElementById("tokenSection").style.display = "flex";
-        document.getElementById("yourToken").textContent = token;
+        document.getElementById("yourToken").textContent = newId;
       } catch (error) {
         console.error("Firebase write failed:", error);
-        alert("Unable to generate token. Please try again later.");
       }
     };
 
-    // Login modal handlers
     window.openLogin = () => document.getElementById("loginModal").style.display = "flex";
     window.closeLogin = () => document.getElementById("loginModal").style.display = "none";
 
-    // Doctor login
     window.doctorLogin = async () => {
       const email = document.getElementById("loginEmail").value;
       const pass = document.getElementById("loginPass").value;
