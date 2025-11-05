@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Doctor Dashboard – Lucknow Health & Skin Care Centre</title>
 <style>
   *{box-sizing:border-box;}
@@ -72,14 +72,19 @@
     backdrop-filter:blur(15px);position:relative;
   }
   .close-btn{position:absolute;top:8px;right:12px;cursor:pointer;font-size:1.2rem;color:#555;}
-  .modal input{width:100%;margin-bottom:10px;padding:8px;
-    border-radius:8px;border:1px solid rgba(255,255,255,0.6);
-    background:rgba(255,255,255,0.5);}
+  .modal input{width:100%;margin-bottom:10px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.6);background:rgba(255,255,255,0.5);}
   footer{
     margin-top:auto;width:100%;text-align:center;padding:10px 0;
     font-size:0.9rem;color:#ffffff;
     background:linear-gradient(to right,#79b6f3,#a8d1ff);
     box-shadow:0 -2px 10px rgba(0,0,0,0.05);
+  }
+
+  /* small responsive tweaks */
+  @media (max-width:768px){
+    .token-card{min-width:90px;padding:8px 10px;}
+    .token-value{font-size:1.05rem;}
+    th,td{padding:8px;font-size:0.9rem;}
   }
 </style>
 </head>
@@ -88,9 +93,9 @@
   <h2>Doctor Dashboard</h2>
 
   <div class="token-cards">
-    <div class="token-card"><h3>Current</h3><div class="token-value" id="currentToken"></div></div>
-    <div class="token-card"><h3>Next</h3><div class="token-value" id="nextToken"></div></div>
-    <div class="token-card"><h3>Remaining</h3><div class="token-value" id="remainingTokens"></div></div>
+    <div class="token-card"><h3>Current</h3><div class="token-value" id="currentToken">0</div></div>
+    <div class="token-card"><h3>Next</h3><div class="token-value" id="nextToken">0</div></div>
+    <div class="token-card"><h3>Remaining</h3><div class="token-value" id="remainingTokens">0</div></div>
   </div>
 
   <button class="add-btn" onclick="openAdd()">➕ Add Patient</button>
@@ -133,6 +138,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, set, update, remove, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+/* Firebase config — keep yours as before */
 const firebaseConfig = {
   apiKey:"AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
   authDomain:"clinic-token-system-e1430.firebaseapp.com",
@@ -153,84 +159,163 @@ const patientList=document.getElementById("patientList");
 const deletedList=document.getElementById("deletedList");
 const modalBg=document.getElementById("modalBg");
 
-function openAdd(){modalBg.style.display="flex";}
-function closeModal(){modalBg.style.display="none";}
-window.openAdd=openAdd;window.closeModal=closeModal;
+/* Modal open/close */
+function openAdd(){ modalBg.style.display = "flex"; }
+function closeModal(){ modalBg.style.display = "none"; }
+window.openAdd = openAdd; window.closeModal = closeModal;
 
+/* Get next numeric ID for patients (ensures numeric sequential IDs) */
 async function getNextId(){
-  const snap=await get(ref(db,"patients"));
-  const data=snap.val()||{};
-  const ids=Object.keys(data).map(k=>parseInt(k)).filter(n=>!isNaN(n));
-  return ids.length?Math.max(...ids)+1:1;
+  const snap = await get(ref(db,"patients"));
+  const data = snap.val() || {};
+  const ids = Object.keys(data).map(k => parseInt(k,10)).filter(n => !isNaN(n));
+  return ids.length ? Math.max(...ids)+1 : 1;
 }
 
+/* Save new patient */
 async function savePatient(){
-  const name=pName.value.trim(); if(!name)return alert("Name required");
-  const now=new Date().toLocaleString();
-  const id=await getNextId();
-  const obj={id:id,token:id,name,age:pAge.value,mobile:pMobile.value,address:pAddress.value,illness:pIllness.value,time:now};
-  await set(ref(db,"patients/"+id),obj);
-  modalBg.style.display="none";
-  pName.value=pAge.value=pMobile.value=pAddress.value=pIllness.value="";
-  updateTokenSummary();
+  const name = (document.getElementById("pName").value || "").trim();
+  if(!name){ alert("Name required"); return; }
+  const age = (document.getElementById("pAge").value || "").trim();
+  const mobile = (document.getElementById("pMobile").value || "").trim();
+  const address = (document.getElementById("pAddress").value || "").trim();
+  const illness = (document.getElementById("pIllness").value || "").trim();
+  const now = new Date().toLocaleString();
+  const id = await getNextId();
+  const payload = { id: id, token: id, name, age, mobile, address, illness, time: now };
+  await set(ref(db,"patients/"+id), payload);
+  // clear and close modal
+  document.getElementById("pName").value = "";
+  document.getElementById("pAge").value = "";
+  document.getElementById("pMobile").value = "";
+  document.getElementById("pAddress").value = "";
+  document.getElementById("pIllness").value = "";
+  modalBg.style.display = "none";
+  await updateTokenSummary();
 }
+window.savePatient = savePatient;
 
-async function serveToken(id){
-  const psSnap=await get(ref(db,"patients"));
-  const ps=psSnap.val()||{};
-  const ids=Object.keys(ps).map(k=>parseInt(k,10)).filter(n=>!isNaN(n)).sort((a,b)=>a-b);
-  if(ids.length===0)return;
+/* Serve token for a specific patient id.
+   Behavior:
+   - If there is any patient with id > served id -> set current = served id, next = smallest id > served id, remaining = count(ids > served id)
+   - If no id > served id -> ALL served -> set all tokens to 0
+*/
+async function serveToken(servedId){
+  // normalize
+  const idNum = Number(servedId) || 0;
+  const psSnap = await get(ref(db,"patients"));
+  const ps = psSnap.val() || {};
+  const ids = Object.keys(ps).map(k=>parseInt(k,10)).filter(n=>!isNaN(n)).sort((a,b)=>a-b);
 
-  const next=ids.find(i=>i>id);
-  if(!next){ // ✅ All served
+  if(ids.length === 0){
+    // nothing — set zeros
     await set(ref(db,"tokens/current"), 0);
     await set(ref(db,"tokens/next"), 0);
     await set(ref(db,"tokens/remaining"), 0);
-    currentEl.textContent="0"; nextEl.textContent="0"; remainingEl.textContent="0";
+    currentEl.textContent = nextEl.textContent = remainingEl.textContent = "0";
     return;
   }
 
-  const remaining=ids.filter(i=>i>next).length;
-  await set(ref(db,"tokens/current"), next);
-  await set(ref(db,"tokens/next"), ids.find(i=>i>next)||0);
-  await set(ref(db,"tokens/remaining"), remaining);
-  updateTokenSummary();
-}
+  // If served id is not in list (maybe stale), pick the smallest id >= servedId; else use servedId
+  let servedIndex = ids.indexOf(idNum);
+  if(servedIndex === -1){
+    // pick first id >= idNum, or if not present, last id (to handle edge cases)
+    servedIndex = ids.findIndex(i => i >= idNum);
+    if(servedIndex === -1) servedIndex = ids.length - 1;
+  }
 
+  // Determine next id (the next to be served after marking servedIndex)
+  const nextId = (servedIndex + 1 < ids.length) ? ids[servedIndex + 1] : null;
+  if(nextId === null){
+    // All served — set all to 0
+    await set(ref(db,"tokens/current"), 0);
+    await set(ref(db,"tokens/next"), 0);
+    await set(ref(db,"tokens/remaining"), 0);
+    currentEl.textContent = nextEl.textContent = remainingEl.textContent = "0";
+    return;
+  }
+
+  // There is a next to serve
+  const currentToSet = ids[servedIndex]; // the id that was just served
+  const remainingCount = ids.filter(i => i > currentToSet).length;
+  await set(ref(db,"tokens/current"), currentToSet);
+  await set(ref(db,"tokens/next"), nextId);
+  await set(ref(db,"tokens/remaining"), remainingCount);
+
+  // Refresh summary UI
+  await updateTokenSummary();
+}
+window.serveToken = serveToken;
+
+/* Update token summary from patients and tokens/current — ensures consistent behavior */
 async function updateTokenSummary(){
-  const snap=await get(ref(db,"patients"));
-  const data=snap.val()||{};
-  const ids=Object.keys(data).map(k=>parseInt(k)).filter(n=>!isNaN(n)).sort((a,b)=>a-b);
-  if(ids.length===0){
-    await set(ref(db,"tokens/current"),0);
-    await set(ref(db,"tokens/next"),0);
-    await set(ref(db,"tokens/remaining"),0);
-    currentEl.textContent=nextEl.textContent=remainingEl.textContent="0";
+  const snap = await get(ref(db,"patients"));
+  const data = snap.val() || {};
+  const ids = Object.keys(data).map(k=>parseInt(k,10)).filter(n=>!isNaN(n)).sort((a,b)=>a-b);
+
+  if(ids.length === 0){
+    // no patients => all zeros
+    await set(ref(db,"tokens/current"), 0);
+    await set(ref(db,"tokens/next"), 0);
+    await set(ref(db,"tokens/remaining"), 0);
+    currentEl.textContent = "0";
+    nextEl.textContent = "0";
+    remainingEl.textContent = "0";
     return;
   }
-  const total=ids.length;
-  const cSnap=await get(ref(db,"tokens/current"));
-  let current=cSnap.exists()&&cSnap.val()?parseInt(cSnap.val()):ids[0];
-  if(!ids.includes(current))current=ids[0];
-  const next=ids.find(i=>i>current)||0;
-  const remaining=next===0?0:ids.filter(i=>i>current).length;
-  await set(ref(db,"tokens/current"),current);
-  await set(ref(db,"tokens/next"),next);
-  await set(ref(db,"tokens/remaining"),remaining);
-  currentEl.textContent=current||0;
-  nextEl.textContent=next||0;
-  remainingEl.textContent=remaining||0;
+
+  const total = ids.length;
+  const currentSnap = await get(ref(db,"tokens/current"));
+  // use numeric current if available and present in ids, otherwise start from first id
+  let currentRaw = currentSnap.exists() ? currentSnap.val() : null;
+  let current = (currentRaw === null || currentRaw === "" || Number(currentRaw) === 0) ? null : Number(currentRaw);
+
+  if(current === null || !ids.includes(current)){
+    // if current is null or not part of present ids, default to first id (not served yet)
+    current = ids[0];
+    // But if tokens/current was 0 meaning all served, maintain zeros
+    if(currentRaw === 0 || currentRaw === "0"){
+      // all served earlier — keep zeros if there are no unserved ids greater than 0
+      // However since ids exist, there are patients — set current to first id
+      current = ids[0];
+    }
+  }
+
+  // if current is 0 (special meaning all served), convert to numeric 0 handled above
+  // Next is smallest id greater than current, or 0 if none
+  const next = ids.find(i => i > current) || 0;
+  const remaining = next === 0 ? 0 : ids.filter(i => i > current).length;
+
+  // If next === 0 and current is the last served, that implies all served -> set current=0, next=0, remaining=0
+  if(next === 0 && ids.includes(Number(current)) && ids[ids.length-1] <= Number(current)){
+    await set(ref(db,"tokens/current"), 0);
+    await set(ref(db,"tokens/next"), 0);
+    await set(ref(db,"tokens/remaining"), 0);
+    currentEl.textContent = nextEl.textContent = remainingEl.textContent = "0";
+    return;
+  }
+
+  // Otherwise set values appropriately
+  await set(ref(db,"tokens/current"), current);
+  await set(ref(db,"tokens/next"), next);
+  await set(ref(db,"tokens/remaining"), remaining);
+
+  currentEl.textContent = String(current || 0);
+  nextEl.textContent = String(next || 0);
+  remainingEl.textContent = String(remaining || 0);
 }
 
+/* Render patients table with inline editable fields and actions (serve/delete) */
 function loadPatients(){
-  onValue(ref(db,"patients"),snap=>{
-    patientList.innerHTML="";
-    const data=snap.val()||{};
-    const arr=Object.values(data).sort((a,b)=>a.id-b.id);
-    arr.forEach(v=>{
-      const tr=document.createElement("tr");
-      tr.innerHTML=`
-        <td>${v.id}</td><td>${v.token}</td>
+  onValue(ref(db,"patients"), snap => {
+    patientList.innerHTML = "";
+    const data = snap.val() || {};
+    const arr = Object.values(data).sort((a,b)=>a.id-b.id);
+    arr.forEach(v => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${v.id}</td>
+        <td>${v.token}</td>
         <td contenteditable="true" onblur="saveEdit(${v.id},'name',this.innerText)">${v.name||""}</td>
         <td contenteditable="true" onblur="saveEdit(${v.id},'age',this.innerText)">${v.age||""}</td>
         <td contenteditable="true" onblur="saveEdit(${v.id},'mobile',this.innerText)">${v.mobile||""}</td>
@@ -248,44 +333,58 @@ function loadPatients(){
 }
 loadPatients();
 
+/* Deleted history listing */
 function loadDeleted(){
-  onValue(ref(db,"deleted"),snap=>{
-    deletedList.innerHTML="";
-    const data=snap.val()||{};
-    Object.values(data).forEach(v=>{
-      const tr=document.createElement("tr");
-      tr.innerHTML=`<td>${v.id}</td><td>${v.token}</td><td>${v.name}</td>
-      <td><button class='restore-btn' onclick='restore(${v.id})'>♻️</button>
-      <button class='delete-btn' onclick='confirmDelete(${v.id})'>🗑️</button></td>`;
+  onValue(ref(db,"deleted"), snap => {
+    deletedList.innerHTML = "";
+    const data = snap.val() || {};
+    Object.values(data).forEach(v => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${v.id}</td><td>${v.token}</td><td>${v.name}</td>
+        <td><button class='restore-btn' onclick='restore(${v.id})'>♻️</button>
+        <button class='delete-btn' onclick='confirmDelete(${v.id})'>🗑️</button></td>`;
       deletedList.appendChild(tr);
     });
   });
 }
 loadDeleted();
 
-onValue(ref(db,"tokens/current"),s=>currentEl.textContent=s.exists()?s.val():"0");
-onValue(ref(db,"tokens/next"),s=>nextEl.textContent=s.exists()?s.val():"0");
-onValue(ref(db,"tokens/remaining"),s=>remainingEl.textContent=s.exists()?s.val():"0");
-onValue(ref(db,"patients"),()=>updateTokenSummary());
-onValue(ref(db,"deleted"),()=>updateTokenSummary());
+/* Live listeners for token nodes to immediately update UI if changed elsewhere */
+onValue(ref(db,"tokens/current"), s => currentEl.textContent = (s.exists() ? String(s.val()) : "0"));
+onValue(ref(db,"tokens/next"), s => nextEl.textContent = (s.exists() ? String(s.val()) : "0"));
+onValue(ref(db,"tokens/remaining"), s => remainingEl.textContent = (s.exists() ? String(s.val()) : "0"));
+onValue(ref(db,"patients"), () => updateTokenSummary());
+onValue(ref(db,"deleted"), () => updateTokenSummary());
 
-window.saveEdit=(id,f,v)=>update(ref(db,"patients/"+id),{[f]:v.trim()});
-window.deletePatient=async id=>{
-  const s=await get(ref(db,"patients/"+id));if(!s.exists())return;
-  const v=s.val();await set(ref(db,"deleted/"+id),v);await remove(ref(db,"patients/"+id));updateTokenSummary();
+/* Helpers for edit/delete/restore */
+window.saveEdit = (id, field, value) => update(ref(db,"patients/"+id), { [field]: value.trim() });
+window.deletePatient = async (id) => {
+  const s = await get(ref(db,"patients/"+id)); if(!s.exists()) return;
+  const v = s.val();
+  await set(ref(db,"deleted/"+id), v);
+  await remove(ref(db,"patients/"+id));
+  await updateTokenSummary();
 };
-window.restore=async id=>{
-  const s=await get(ref(db,"deleted/"+id));if(!s.exists())return;
-  const v=s.val();await set(ref(db,"patients/"+id),v);await remove(ref(db,"deleted/"+id));updateTokenSummary();
+window.restore = async (id) => {
+  const s = await get(ref(db,"deleted/"+id)); if(!s.exists()) return;
+  const v = s.val();
+  await set(ref(db,"patients/"+id), v);
+  await remove(ref(db,"deleted/"+id));
+  await updateTokenSummary();
 };
-window.confirmDelete=async id=>{
-  if(confirm("Are you sure you want to permanently delete this record?")){
-    await remove(ref(db,"deleted/"+id));updateTokenSummary();
-  }
+window.confirmDelete = async (id) => {
+  if(!confirm("Are you sure you want to permanently delete this record?")) return;
+  await remove(ref(db,"deleted/"+id));
+  await updateTokenSummary();
 };
-window.toggleDeleted=()=>{const s=document.getElementById("deletedSection");s.style.display=s.style.display==="none"?"block":"none";};
+window.toggleDeleted = () => {
+  const sec = document.getElementById("deletedSection");
+  sec.style.display = sec.style.display === "none" ? "block" : "none";
+};
 
+/* initialize summary once */
 updateTokenSummary();
+
 </script>
 </body>
 </html>
