@@ -144,7 +144,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getDatabase, ref, push, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  import { getDatabase, ref, push, set, update, remove, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   const firebaseConfig = {
     apiKey:"AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
@@ -162,21 +162,21 @@
   const patientList=document.getElementById("patientList");
   const deletedList=document.getElementById("deletedList");
   const modalBg=document.getElementById("modalBg");
-  let editId=null;
+  let editKey=null;
 
-  function openAdd(){editId=null;document.getElementById("modalTitle").innerText="Add Patient";modalBg.style.display="flex";}
+  function openAdd(){editKey=null;document.getElementById("modalTitle").innerText="Add Patient";modalBg.style.display="flex";}
   function closeModal(){modalBg.style.display="none";}
   window.openAdd=openAdd;window.closeModal=closeModal;
 
-  function savePatient(){
-    const name=pName.value.trim(); if(!name)return;
+  async function savePatient(){
+    const name=pName.value.trim(); if(!name)return alert("Name required");
     const now=new Date().toISOString().split("T")[0];
     const obj={name,age:pAge.value,mobile:pMobile.value,address:pAddress.value,illness:pIllness.value,time:now};
-    if(editId){
-      update(ref(db,"patients/"+editId),obj);
+    if(editKey){
+      await update(ref(db,"patients/"+editKey),obj);
     }else{
       const newRef=push(ref(db,"patients"));
-      set(newRef,{id:newRef.key,token:Date.now(),...obj});
+      await set(newRef,{id:newRef.key,token:Date.now(),...obj});
     }
     modalBg.style.display="none";
   }
@@ -186,56 +186,56 @@
     onValue(ref(db,"patients"),snap=>{
       patientList.innerHTML="";
       snap.forEach(ch=>{
-        const v=ch.val();
+        const key=ch.key,v=ch.val();
         const tr=document.createElement("tr");
-        tr.innerHTML=`<td>${v.id.slice(-4)}</td><td>${v.token}</td><td>${v.name||""}</td><td>${v.age||""}</td><td>${v.mobile||""}</td>
+        tr.innerHTML=`<td>${key.slice(-4)}</td><td>${v.token}</td><td>${v.name||""}</td><td>${v.age||""}</td><td>${v.mobile||""}</td>
         <td>${v.address||""}</td><td>${v.illness||""}</td><td>${v.time||""}</td>
-        <td class='actions'><button class='edit-btn' onclick='editPatient("${v.id}")'>✏️</button>
-        <button class='delete-btn' onclick='deletePatient("${v.id}")'>🗑️</button></td>`;
+        <td class='actions'><button class='edit-btn' onclick='editPatient("${key}")'>✏️</button>
+        <button class='delete-btn' onclick='deletePatient("${key}")'>🗑️</button></td>`;
         patientList.appendChild(tr);
       });
     });
     onValue(ref(db,"deleted"),snap=>{
       deletedList.innerHTML="";
       snap.forEach(ch=>{
-        const v=ch.val();
+        const key=ch.key,v=ch.val();
         const tr=document.createElement("tr");
-        tr.innerHTML=`<td>${v.id.slice(-4)}</td><td>${v.token}</td><td>${v.name}</td>
-        <td><button class='restore-btn' onclick='restore("${v.id}")'>♻️</button>
-        <button class='delete-btn' onclick='permadelete("${v.id}")'>🗑️</button></td>`;
+        tr.innerHTML=`<td>${key.slice(-4)}</td><td>${v.token}</td><td>${v.name}</td>
+        <td><button class='restore-btn' onclick='restore("${key}")'>♻️</button>
+        <button class='delete-btn' onclick='permadelete("${key}")'>🗑️</button></td>`;
         deletedList.appendChild(tr);
       });
     });
   }
   loadPatients();
 
-  window.editPatient=function(id){
-    editId=id;
-    onValue(ref(db,"patients/"+id),snap=>{
+  window.editPatient=function(key){
+    editKey=key;
+    get(ref(db,"patients/"+key)).then(snap=>{
       const v=snap.val();
       pName.value=v.name||"";pAge.value=v.age||"";pMobile.value=v.mobile||"";pAddress.value=v.address||"";pIllness.value=v.illness||"";
       document.getElementById("modalTitle").innerText="Edit Patient";
       modalBg.style.display="flex";
-    },{onlyOnce:true});
+    });
   }
 
-  window.deletePatient=function(id){
-    onValue(ref(db,"patients/"+id),snap=>{
+  window.deletePatient=function(key){
+    get(ref(db,"patients/"+key)).then(snap=>{
       const v=snap.val(); if(!v)return;
-      set(ref(db,"deleted/"+id),v);
-      remove(ref(db,"patients/"+id));
-    },{onlyOnce:true});
+      set(ref(db,"deleted/"+key),v);
+      remove(ref(db,"patients/"+key));
+    });
   }
 
-  window.restore=function(id){
-    onValue(ref(db,"deleted/"+id),snap=>{
+  window.restore=function(key){
+    get(ref(db,"deleted/"+key)).then(snap=>{
       const v=snap.val(); if(!v)return;
-      set(ref(db,"patients/"+id),v);
-      remove(ref(db,"deleted/"+id));
-    },{onlyOnce:true});
+      set(ref(db,"patients/"+key),v);
+      remove(ref(db,"deleted/"+key));
+    });
   }
 
-  window.permadelete=function(id){ remove(ref(db,"deleted/"+id)); }
+  window.permadelete=function(key){ remove(ref(db,"deleted/"+key)); }
 
   window.toggleDeleted=function(){
     const sec=document.getElementById("deletedSection");
