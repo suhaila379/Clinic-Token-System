@@ -71,27 +71,6 @@
   .edit-btn{color:#2563eb;}
   .delete-btn{color:#dc2626;}
   .restore-btn{color:#10b981;}
-  .modal-bg{
-    display:none;position:fixed;top:0;left:0;right:0;bottom:0;
-    background:rgba(0,0,0,0.25);backdrop-filter:blur(4px);
-    justify-content:center;align-items:center;z-index:100;
-  }
-  .modal{
-    background:rgba(255,255,255,0.3);
-    border:1px solid rgba(255,255,255,0.6);
-    border-radius:20px;padding:20px;min-width:300px;max-width:90%;
-    box-shadow:0 4px 15px rgba(0,153,255,0.3),inset 0 0 20px rgba(255,255,255,0.1);
-    backdrop-filter:blur(15px);position:relative;
-  }
-  .close-btn{
-    position:absolute;top:8px;right:12px;
-    cursor:pointer;font-size:1.2rem;color:#555;
-  }
-  .modal input{
-    width:100%;margin-bottom:10px;padding:8px;
-    border-radius:8px;border:1px solid rgba(255,255,255,0.6);
-    background:rgba(255,255,255,0.5);
-  }
   footer{
     margin-top:auto;
     width:100%;
@@ -114,9 +93,9 @@
   <h2>Doctor Dashboard</h2>
 
   <div class="token-cards">
-    <div class="token-card"><h3>Current</h3><div class="token-value" id="currentToken">--</div></div>
-    <div class="token-card"><h3>Next</h3><div class="token-value" id="nextToken">--</div></div>
-    <div class="token-card"><h3>Remaining</h3><div class="token-value" id="remainingTokens">--</div></div>
+    <div class="token-card"><h3>Current</h3><div class="token-value" id="currentToken"></div></div>
+    <div class="token-card"><h3>Next</h3><div class="token-value" id="nextToken"></div></div>
+    <div class="token-card"><h3>Remaining</h3><div class="token-value" id="remainingTokens"></div></div>
   </div>
 
   <button class="add-btn" onclick="openAdd()">➕ Add Patient</button>
@@ -139,19 +118,6 @@
     </table>
   </div>
 
-  <div class="modal-bg" id="modalBg">
-    <div class="modal">
-      <span class="close-btn" onclick="closeModal()">✖</span>
-      <h3 id="modalTitle">Add Patient</h3>
-      <input id="pName" placeholder="Name">
-      <input id="pAge" placeholder="Age">
-      <input id="pMobile" placeholder="Mobile">
-      <input id="pAddress" placeholder="Address">
-      <input id="pIllness" placeholder="Illness">
-      <button class="add-btn" onclick="savePatient()">Save</button>
-    </div>
-  </div>
-
   <footer>© 2025 Lucknow Health & Skin Care Centre</footer>
 
 <script type="module">
@@ -171,58 +137,61 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
+  const currentEl=document.getElementById("currentToken");
+  const nextEl=document.getElementById("nextToken");
+  const remainingEl=document.getElementById("remainingTokens");
   const patientList=document.getElementById("patientList");
   const deletedList=document.getElementById("deletedList");
-  const modalBg=document.getElementById("modalBg");
 
-  function openAdd(){modalBg.style.display="flex";}
-  function closeModal(){modalBg.style.display="none";}
-  window.openAdd=openAdd;window.closeModal=closeModal;
-
-  async function getNextId(){
-    const snap=await get(ref(db,"patients"));
-    const data=snap.val()||{};
-    const ids=Object.keys(data).map(k=>parseInt(k)).filter(n=>!isNaN(n));
-    return ids.length?Math.max(...ids)+1:1;
+  function syncTokens(current, next, remaining) {
+    set(ref(db, "tokens/current"), current || "");
+    set(ref(db, "tokens/next"), next || "");
+    set(ref(db, "tokens/remaining"), remaining || "");
+    currentEl.textContent = current || "";
+    nextEl.textContent = next || "";
+    remainingEl.textContent = remaining || "";
   }
 
-  async function savePatient(){
-    const name=pName.value.trim(); if(!name)return alert("Name required");
-    const now=new Date().toISOString().split("T")[0];
-    const obj={name,age:pAge.value,mobile:pMobile.value,address:pAddress.value,illness:pIllness.value,time:now};
-    const id=await getNextId();
-    await set(ref(db,"patients/"+id),{id:id,token:id,...obj});
-    modalBg.style.display="none";
-  }
-
-  function enableInlineEdit(tr,key){
-    const fields=["name","age","mobile","address","illness"];
-    fields.forEach((f,i)=>{
-      const td=tr.children[i+2];
-      td.contentEditable=true;
-      td.addEventListener("blur",()=>update(ref(db,"patients/"+key),{[f]:td.innerText.trim()}));
+  function updateTokenSummary() {
+    get(ref(db, "patients")).then(snap => {
+      const data = snap.val() || {};
+      const ids = Object.keys(data).map(k => parseInt(k)).filter(n => !isNaN(n));
+      if (ids.length === 0) {
+        syncTokens("", "", "");
+        return;
+      }
+      const total = ids.length;
+      get(ref(db, "tokens/current")).then(cSnap => {
+        const current = cSnap.exists() ? parseInt(cSnap.val()) : 0;
+        const next = current < total ? current + 1 : "";
+        const remaining = current === 0 ? total : Math.max(total - current, 0);
+        syncTokens(current || "", next || "", remaining || "");
+      });
     });
   }
+
+  onValue(ref(db,"patients"),()=>updateTokenSummary());
+  onValue(ref(db,"deleted"),()=>updateTokenSummary());
 
   function loadPatients(){
     onValue(ref(db,"patients"),snap=>{
       patientList.innerHTML="";
       snap.forEach(ch=>{
-        const key=ch.key,v=ch.val();
+        const v=ch.val();
         const tr=document.createElement("tr");
         tr.innerHTML=`
-        <td>${v.id}</td>
-        <td>${v.token}</td>
-        <td>${v.name||""}</td>
-        <td>${v.age||""}</td>
-        <td>${v.mobile||""}</td>
-        <td>${v.address||""}</td>
-        <td>${v.illness||""}</td>
-        <td>${v.time||""}</td>
-        <td class='actions'>
-          <button class='edit-btn' onclick='toggleEdit(this,\"${key}\")'>✏️</button>
-          <button class='delete-btn' onclick='deletePatient(\"${key}\")'>🗑️</button>
-        </td>`;
+          <td>${v.id}</td>
+          <td>${v.token}</td>
+          <td contenteditable="true" onblur="saveEdit(${v.id}, 'name', this.innerText)">${v.name||""}</td>
+          <td contenteditable="true" onblur="saveEdit(${v.id}, 'age', this.innerText)">${v.age||""}</td>
+          <td contenteditable="true" onblur="saveEdit(${v.id}, 'mobile', this.innerText)">${v.mobile||""}</td>
+          <td contenteditable="true" onblur="saveEdit(${v.id}, 'address', this.innerText)">${v.address||""}</td>
+          <td contenteditable="true" onblur="saveEdit(${v.id}, 'illness', this.innerText)">${v.illness||""}</td>
+          <td>${v.time||""}</td>
+          <td class='actions'>
+            <button class='edit-btn' onclick='toggleEdit(this,${v.id})'>✏️</button>
+            <button class='delete-btn' onclick='deletePatient(${v.id})'>🗑️</button>
+          </td>`;
         patientList.appendChild(tr);
       });
     });
@@ -230,45 +199,41 @@
     onValue(ref(db,"deleted"),snap=>{
       deletedList.innerHTML="";
       snap.forEach(ch=>{
-        const key=ch.key,v=ch.val();
+        const v=ch.val();
         const tr=document.createElement("tr");
         tr.innerHTML=`<td>${v.id}</td><td>${v.token}</td><td>${v.name}</td>
-        <td><button class='restore-btn' onclick='restore("${key}")'>♻️</button>
-        <button class='delete-btn' onclick='confirmDelete("${key}")'>🗑️</button></td>`;
+        <td><button class='restore-btn' onclick='restore(${v.id})'>♻️</button>
+        <button class='delete-btn' onclick='confirmDelete(${v.id})'>🗑️</button></td>`;
         deletedList.appendChild(tr);
       });
     });
   }
   loadPatients();
 
-  window.toggleEdit=function(btn,key){
-    const tr=btn.closest("tr");
-    if(btn.dataset.editing==="true"){btn.innerText="✏️";btn.dataset.editing="false";}
-    else{btn.innerText="✅";btn.dataset.editing="true";enableInlineEdit(tr,key);}
+  window.saveEdit=function(id,field,value){ update(ref(db,"patients/"+id),{[field]:value.trim()}); };
+  window.toggleEdit=function(btn,id){btn.innerText=btn.innerText==="✏️"?"✅":"✏️";};
+  window.deletePatient=async function(id){
+    const snap=await get(ref(db,"patients/"+id));
+    if(!snap.exists())return;
+    const v=snap.val();
+    await set(ref(db,"deleted/"+id),v);
+    await remove(ref(db,"patients/"+id));
+    updateTokenSummary();
   };
-
-  window.deletePatient=function(key){
-    get(ref(db,"patients/"+key)).then(snap=>{
-      const v=snap.val(); if(!v)return;
-      set(ref(db,"deleted/"+key),v);
-      remove(ref(db,"patients/"+key));
-    });
+  window.restore=async function(id){
+    const snap=await get(ref(db,"deleted/"+id));
+    if(!snap.exists())return;
+    const v=snap.val();
+    await set(ref(db,"patients/"+id),v);
+    await remove(ref(db,"deleted/"+id));
+    updateTokenSummary();
   };
-
-  window.restore=function(key){
-    get(ref(db,"deleted/"+key)).then(snap=>{
-      const v=snap.val(); if(!v)return;
-      set(ref(db,"patients/"+key),v);
-      remove(ref(db,"deleted/"+key));
-    });
-  };
-
-  window.confirmDelete=function(key){
+  window.confirmDelete=async function(id){
     if(confirm("Are you sure you want to permanently delete this record?")){
-      remove(ref(db,"deleted/"+key));
+      await remove(ref(db,"deleted/"+id));
+      updateTokenSummary();
     }
   };
-
   window.toggleDeleted=function(){
     const sec=document.getElementById("deletedSection");
     sec.style.display=sec.style.display==="none"?"block":"none";
