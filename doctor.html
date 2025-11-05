@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Doctor Dashboard – Lucknow Health & Skin Care Centre</title>
 <style>
+/* --------------  same styling as before -------------- */
 body{font-family:"Poppins",sans-serif;margin:0;background:linear-gradient(135deg,#e3f2fd,#ffffff);
 color:#0a2540;min-height:100vh;display:flex;flex-direction:column;align-items:center;}
 .clinic-header{margin-top:20px;font-size:1.3rem;font-weight:600;background:rgba(255,255,255,0.3);
 border-radius:20px;padding:10px 28px;color:#0a2540;backdrop-filter:blur(15px);
-border:1px solid rgba(255,255,255,0.6);box-shadow:0 4px 15px rgba(0,153,255,0.25),inset 0 0 20px rgba(255,255,255,0.1);}
+border:1px solid rgba(255,255,255,0.6);box-shadow:0 4px 15px rgba(0,153,255,0.25);}
 h2{font-weight:500;margin:12px 0;color:#255aa1;}
 .token-cards{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:15px;}
 .token-card{background:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.6);border-radius:16px;
-padding:10px 16px;min-width:110px;text-align:center;backdrop-filter:blur(15px);
-box-shadow:0 4px 15px rgba(0,153,255,0.2),inset 0 0 20px rgba(255,255,255,0.1);}
+padding:10px 16px;min-width:110px;text-align:center;backdrop-filter:blur(15px);}
 .token-card h3{margin:4px 0;font-size:0.9rem;color:#3671b3;}
 .token-value{font-weight:600;font-size:1.3rem;}
 .add-btn{border:none;cursor:pointer;border-radius:12px;padding:10px 20px;background:rgba(255,255,255,0.3);
@@ -22,32 +22,26 @@ border:1px solid rgba(255,255,255,0.6);backdrop-filter:blur(10px);color:#0a2540;
 box-shadow:0 4px 12px rgba(0,153,255,0.2);}
 .add-btn:hover{transform:scale(1.05);box-shadow:0 6px 20px rgba(0,153,255,0.35);}
 .table-container{width:95%;overflow-x:auto;margin-bottom:20px;background:rgba(255,255,255,0.3);
-border:1px solid rgba(255,255,255,0.6);border-radius:16px;backdrop-filter:blur(15px);
-box-shadow:0 4px 15px rgba(0,153,255,0.2),inset 0 0 20px rgba(255,255,255,0.1);}
+border:1px solid rgba(255,255,255,0.6);border-radius:16px;backdrop-filter:blur(15px);}
 table{width:100%;border-collapse:collapse;}
 th,td{padding:10px 14px;border-bottom:1px solid rgba(0,0,0,0.05);}
 th{background:rgba(255,255,255,0.5);backdrop-filter:blur(8px);}
-.actions button{
-  border:none;cursor:pointer;font-size:1rem;margin:0 3px;padding:6px 10px;border-radius:10px;
-  color:#0a2540;font-weight:500;backdrop-filter:blur(8px);transition:transform .15s ease,box-shadow .15s ease;
-}
-.actions button:hover{transform:scale(1.15);}
+td[contenteditable="true"]{background:rgba(255,255,255,0.6);}
+.actions button{border:none;cursor:pointer;font-size:1rem;margin:0 3px;padding:6px 10px;border-radius:10px;
+color:#0a2540;font-weight:500;backdrop-filter:blur(8px);}
 .serve-btn{background:rgba(16,185,129,0.25);border:1px solid rgba(16,185,129,0.4);}
-.edit-btn{background:rgba(34,197,94,0.25);border:1px solid rgba(34,197,94,0.4);}
 .delete-btn{background:rgba(220,38,38,0.25);border:1px solid rgba(220,38,38,0.4);}
 .restore-btn{background:rgba(59,130,246,0.25);border:1px solid rgba(59,130,246,0.4);}
-details summary{background:rgba(255,255,255,0.5);padding:10px;border-radius:10px;cursor:pointer;
-font-weight:500;margin:10px 0;}
+details summary{background:rgba(255,255,255,0.5);padding:10px;border-radius:10px;cursor:pointer;font-weight:500;margin:10px 0;}
 .modal-bg{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.25);
 backdrop-filter:blur(4px);justify-content:center;align-items:center;z-index:100;}
 .modal{background:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.6);border-radius:20px;
-padding:20px;min-width:300px;max-width:90%;box-shadow:0 4px 15px rgba(0,153,255,0.3),
-inset 0 0 20px rgba(255,255,255,0.1);backdrop-filter:blur(15px);position:relative;}
+padding:20px;min-width:300px;max-width:90%;backdrop-filter:blur(15px);position:relative;}
 .close-btn{position:absolute;top:8px;right:12px;cursor:pointer;font-size:1.2rem;color:#555;}
 .modal input{width:100%;margin-bottom:10px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.6);
 background:rgba(255,255,255,0.5);}
 footer{margin-top:auto;width:100%;text-align:center;padding:10px 0;font-size:0.9rem;color:#fff;
-background:linear-gradient(to right,#79b6f3,#a8d1ff);box-shadow:0 -2px 10px rgba(0,0,0,0.05);}
+background:linear-gradient(to right,#79b6f3,#a8d1ff);}
 </style>
 </head>
 <body>
@@ -60,53 +54,50 @@ background:linear-gradient(to right,#79b6f3,#a8d1ff);box-shadow:0 -2px 10px rgba
   <div class="token-card"><h3>Remaining</h3><div class="token-value" id="remainingTokens">0</div></div>
 </div>
 
-<button class="add-btn" onclick="openAdd()">➕ Add Patient</button>
+<div style="text-align:center;margin-bottom:15px;">
+  <button class="add-btn" onclick="openAdd()">➕ Add Patient</button>
+  <button class="add-btn" onclick="exportData('patients')">📤 Export Active</button>
+  <button class="add-btn" onclick="exportData('served')">📤 Export Served</button>
+  <button class="add-btn" onclick="exportData('deleted')">📤 Export Deleted</button>
+  <input type="file" id="importFile" accept=".csv,.json" style="display:none" onchange="importData(event)">
+  <button class="add-btn" onclick="document.getElementById('importFile').click()">📥 Import Patients</button>
+</div>
 
 <div class="table-container">
   <table>
-    <thead>
-      <tr><th>ID</th><th>Token</th><th>Name</th><th>Age</th><th>Mobile</th>
-      <th>Address</th><th>Illness</th><th>Time</th><th>Actions</th></tr>
-    </thead>
+    <thead><tr><th>ID</th><th>Token</th><th>Name</th><th>Age</th><th>Mobile</th>
+      <th>Address</th><th>Illness</th><th>Time</th><th>Actions</th></tr></thead>
     <tbody id="patientList"></tbody>
   </table>
 </div>
 
-<!-- Served Patients Collapsed Section -->
 <details>
   <summary>Served Patients</summary>
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr><th>ID</th><th>Token</th><th>Name</th><th>Age</th><th>Mobile</th>
-        <th>Address</th><th>Illness</th><th>Time</th><th>Actions</th></tr>
-      </thead>
-      <tbody id="servedList"></tbody>
-    </table>
-  </div>
+  <div class="table-container"><table>
+    <thead><tr><th>ID</th><th>Token</th><th>Name</th><th>Age</th><th>Mobile</th>
+      <th>Address</th><th>Illness</th><th>Time</th><th>Actions</th></tr></thead>
+    <tbody id="servedList"></tbody>
+  </table></div>
 </details>
 
-<!-- Deleted History Collapsed Section -->
 <details>
   <summary>Deleted History</summary>
-  <div class="table-container">
-    <table>
-      <thead><tr><th>ID</th><th>Token</th><th>Name</th><th>Actions</th></tr></thead>
-      <tbody id="deletedList"></tbody>
-    </table>
-  </div>
+  <div class="table-container"><table>
+    <thead><tr><th>ID</th><th>Token</th><th>Name</th><th>Actions</th></tr></thead>
+    <tbody id="deletedList"></tbody>
+  </table></div>
 </details>
 
-<!-- Add Patient Modal -->
+<!-- Modal -->
 <div class="modal-bg" id="modalBg">
   <div class="modal">
     <span class="close-btn" onclick="closeModal()">✖</span>
     <h3>Add Patient</h3>
-    <input id="pName" placeholder="Name" />
-    <input id="pAge" placeholder="Age" />
-    <input id="pMobile" placeholder="Mobile" />
-    <input id="pAddress" placeholder="Address" />
-    <input id="pIllness" placeholder="Illness" />
+    <input id="pName" placeholder="Name"/>
+    <input id="pAge" placeholder="Age"/>
+    <input id="pMobile" placeholder="Mobile"/>
+    <input id="pAddress" placeholder="Address"/>
+    <input id="pIllness" placeholder="Illness"/>
     <button class="add-btn" onclick="savePatient()">Save</button>
   </div>
 </div>
@@ -117,7 +108,7 @@ background:linear-gradient(to right,#79b6f3,#a8d1ff);box-shadow:0 -2px 10px rgba
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, set, update, remove, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-/* Firebase Config */
+/* ---------- Firebase ---------- */
 const app = initializeApp({
   apiKey:"AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
   authDomain:"clinic-token-system-e1430.firebaseapp.com",
@@ -129,17 +120,17 @@ const app = initializeApp({
 });
 const db = getDatabase(app);
 
-/* Modal */
-const modalBg=document.getElementById("modalBg");
+/* ---------- Modal ---------- */
+const modalBg = document.getElementById("modalBg");
 function openAdd(){ modalBg.style.display="flex"; }
 function closeModal(){ modalBg.style.display="none"; }
 window.openAdd=openAdd; window.closeModal=closeModal;
 
-/* Add Patient */
+/* ---------- Add Patient ---------- */
 async function getNextId(){
-  const snap=await get(ref(db,"patients"));
-  const data=snap.val()||{};
-  const ids=Object.keys(data).map(Number);
+  const snap = await get(ref(db,"patients"));
+  const data = snap.val()||{};
+  const ids = Object.keys(data).map(Number);
   return ids.length?Math.max(...ids)+1:1;
 }
 async function savePatient(){
@@ -152,80 +143,75 @@ async function savePatient(){
 }
 window.savePatient=savePatient;
 
-/* Active Patients */
+/* ---------- Inline update ---------- */
+window.updateField=async function(table,id,field,value){
+  await update(ref(db,`${table}/${id}`),{[field]:value.trim()});
+}
+
+/* ---------- Patients ---------- */
 onValue(ref(db,"patients"),snap=>{
   patientList.innerHTML="";
   const data=snap.val()||{};
   Object.values(data).sort((a,b)=>a.id-b.id).forEach(v=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<td>${v.id}</td><td>${v.token}</td><td>${v.name}</td><td>${v.age}</td>
-    <td>${v.mobile}</td><td>${v.address}</td><td>${v.illness}</td><td>${v.time}</td>
-    <td class='actions'>
-      <button class='serve-btn' onclick='serve(${v.id})'>✅</button>
-      <button class='delete-btn' onclick='del(${v.id})'>🔴❌</button>
-    </td>`;
-    patientList.appendChild(tr);
+    patientList.innerHTML += `<tr>
+      <td>${v.id}</td><td>${v.token}</td>
+      <td contenteditable="true" onblur="updateField('patients',${v.id},'name',this.innerText)">${v.name||""}</td>
+      <td contenteditable="true" onblur="updateField('patients',${v.id},'age',this.innerText)">${v.age||""}</td>
+      <td contenteditable="true" onblur="updateField('patients',${v.id},'mobile',this.innerText)">${v.mobile||""}</td>
+      <td contenteditable="true" onblur="updateField('patients',${v.id},'address',this.innerText)">${v.address||""}</td>
+      <td contenteditable="true" onblur="updateField('patients',${v.id},'illness',this.innerText)">${v.illness||""}</td>
+      <td contenteditable="true" onblur="updateField('patients',${v.id},'time',this.innerText)">${v.time||""}</td>
+      <td class='actions'><button class='serve-btn' onclick='serve(${v.id})'>✅</button>
+      <button class='delete-btn' onclick='del(${v.id})'>🔴❌</button></td></tr>`;
   });
 });
 
-/* Serve Patient */
 async function serve(id){
   const s=await get(ref(db,"patients/"+id)); if(!s.exists()) return;
   const v=s.val(); v.servedAt=new Date().toLocaleString();
   await set(ref(db,"served/"+id),v); await remove(ref(db,"patients/"+id));
 }
-
-/* Delete Patient */
 async function del(id){
   const s=await get(ref(db,"patients/"+id)); if(!s.exists()) return;
   await set(ref(db,"deleted/"+id),s.val()); await remove(ref(db,"patients/"+id));
 }
 window.serve=serve; window.del=del;
 
-/* Served Patients */
+/* ---------- Served ---------- */
 onValue(ref(db,"served"),snap=>{
   servedList.innerHTML="";
   const data=snap.val()||{};
   Object.values(data).sort((a,b)=>a.id-b.id).forEach(v=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<td>${v.id}</td><td>${v.token}</td><td>${v.name}</td><td>${v.age||""}</td>
-    <td>${v.mobile||""}</td><td>${v.address||""}</td><td>${v.illness||""}</td><td>${v.time||""}</td>
-    <td class='actions'>
-      <button class='edit-btn' onclick='editServed(${v.id})'>🟢✏️</button>
-      <button class='delete-btn' onclick='deleteServed(${v.id})'>🔴❌</button>
-      <button class='restore-btn' onclick='restoreServed(${v.id})'>🔁</button>
-    </td>`;
-    servedList.appendChild(tr);
+    servedList.innerHTML += `<tr>
+      <td>${v.id}</td><td>${v.token}</td>
+      <td contenteditable="true" onblur="updateField('served',${v.id},'name',this.innerText)">${v.name||""}</td>
+      <td contenteditable="true" onblur="updateField('served',${v.id},'age',this.innerText)">${v.age||""}</td>
+      <td contenteditable="true" onblur="updateField('served',${v.id},'mobile',this.innerText)">${v.mobile||""}</td>
+      <td contenteditable="true" onblur="updateField('served',${v.id},'address',this.innerText)">${v.address||""}</td>
+      <td contenteditable="true" onblur="updateField('served',${v.id},'illness',this.innerText)">${v.illness||""}</td>
+      <td contenteditable="true" onblur="updateField('served',${v.id},'time',this.innerText)">${v.time||""}</td>
+      <td class='actions'><button class='delete-btn' onclick='deleteServed(${v.id})'>🔴❌</button>
+      <button class='restore-btn' onclick='restoreServed(${v.id})'>🔁</button></td></tr>`;
   });
 });
-
-async function editServed(id){
-  const s=await get(ref(db,"served/"+id)); if(!s.exists()) return;
-  const name=prompt("Edit Name:",s.val().name||"");
-  if(name) await update(ref(db,"served/"+id),{name});
-}
 async function deleteServed(id){ if(confirm("Delete record?")) await remove(ref(db,"served/"+id)); }
 async function restoreServed(id){
   const s=await get(ref(db,"served/"+id)); if(!s.exists()) return;
   await set(ref(db,"patients/"+id),s.val()); await remove(ref(db,"served/"+id));
 }
-window.editServed=editServed; window.deleteServed=deleteServed; window.restoreServed=restoreServed;
+window.deleteServed=deleteServed; window.restoreServed=restoreServed;
 
-/* Deleted Patients */
+/* ---------- Deleted ---------- */
 onValue(ref(db,"deleted"),snap=>{
   deletedList.innerHTML="";
   const data=snap.val()||{};
   Object.values(data).sort((a,b)=>a.id-b.id).forEach(v=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<td>${v.id}</td><td>${v.token}</td><td>${v.name}</td>
-    <td class='actions'>
-      <button class='restore-btn' onclick='restoreDeleted(${v.id})'>🔁</button>
-      <button class='delete-btn' onclick='deleteDeleted(${v.id})'>🔴❌</button>
-    </td>`;
-    deletedList.appendChild(tr);
+    deletedList.innerHTML += `<tr>
+      <td>${v.id}</td><td>${v.token}</td><td>${v.name}</td>
+      <td class='actions'><button class='restore-btn' onclick='restoreDeleted(${v.id})'>🔁</button>
+      <button class='delete-btn' onclick='deleteDeleted(${v.id})'>🔴❌</button></td></tr>`;
   });
 });
-
 async function restoreDeleted(id){
   const s=await get(ref(db,"deleted/"+id)); if(!s.exists()) return;
   await set(ref(db,"patients/"+id),s.val()); await remove(ref(db,"deleted/"+id));
@@ -233,13 +219,41 @@ async function restoreDeleted(id){
 async function deleteDeleted(id){ if(confirm("Delete permanently?")) await remove(ref(db,"deleted/"+id)); }
 window.restoreDeleted=restoreDeleted; window.deleteDeleted=deleteDeleted;
 
-/* Token Summary */
+/* ---------- Token summary ---------- */
 onValue(ref(db,"patients"),snap=>{
   const ids=Object.keys(snap.val()||{}).map(Number).sort((a,b)=>a-b);
   currentToken.textContent=ids[0]||0;
   nextToken.textContent=ids[1]||0;
   remainingTokens.textContent=Math.max(0,ids.length-(ids[0]?1:0));
 });
+
+/* ---------- Export ---------- */
+window.exportData = async function(table){
+  const snap=await get(ref(db,table)); const data=snap.val()||{};
+  if(!Object.keys(data).length)return alert("No data to export!");
+  const rows=Object.values(data); const headers=Object.keys(rows[0]);
+  const csv=[headers.join(",")].concat(rows.map(r=>headers.map(h=>`"${(r[h]||"").toString().replace(/"/g,'""')}"`).join(","))).join("\n");
+  const blob=new Blob([csv],{type:"text/csv"}); const link=document.createElement("a");
+  link.href=URL.createObjectURL(blob); link.download=`${table}-${new Date().toISOString().split("T")[0]}.csv`; link.click();
+};
+
+/* ---------- Import ---------- */
+window.importData = async function(e){
+  const file=e.target.files[0]; if(!file) return;
+  const text=await file.text(); let data;
+  if(file.name.endsWith(".json")){ data=JSON.parse(text); }
+  else{
+    const [headerLine,...lines]=text.trim().split("\n");
+    const headers=headerLine.split(","); data=lines.map(line=>{
+      const values=line.split(","); const obj={};
+      headers.forEach((h,i)=>obj[h.trim()]=values[i]?.replace(/^"|"$/g,"")); return obj;
+    });
+  }
+  if(!Array.isArray(data)) data=Object.values(data);
+  if(!confirm(`Import ${data.length} records into patients?`)) return;
+  for(const row of data){ const id=row.id||Date.now(); await set(ref(db,"patients/"+id),row); }
+  alert("Import completed ✅");
+};
 </script>
 </body>
 </html>
