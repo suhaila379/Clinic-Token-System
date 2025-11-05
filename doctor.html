@@ -17,13 +17,9 @@
     align-items:center;
   }
   .clinic-header{
-    margin-top:20px;
-    font-size:1.3rem;
-    font-weight:600;
+    margin-top:20px;font-size:1.3rem;font-weight:600;
     background:rgba(255,255,255,0.3);
-    border-radius:20px;
-    padding:10px 28px;
-    color:#0a2540;
+    border-radius:20px;padding:10px 28px;color:#0a2540;
     backdrop-filter:blur(15px);
     border:1px solid rgba(255,255,255,0.6);
     box-shadow:0 4px 15px rgba(0,153,255,0.25),inset 0 0 20px rgba(255,255,255,0.1);
@@ -33,29 +29,20 @@
   .token-card{
     background:rgba(255,255,255,0.3);
     border:1px solid rgba(255,255,255,0.6);
-    border-radius:16px;
-    padding:10px 16px;
-    min-width:110px;
-    text-align:center;
-    backdrop-filter:blur(15px);
+    border-radius:16px;padding:10px 16px;min-width:110px;
+    text-align:center;backdrop-filter:blur(15px);
     box-shadow:0 4px 15px rgba(0,153,255,0.2),inset 0 0 20px rgba(255,255,255,0.1);
   }
   .token-card h3{margin:4px 0;font-size:0.9rem;color:#3671b3;}
   .token-value{font-weight:600;font-size:1.3rem;}
   .add-btn{
-    border:none;cursor:pointer;
-    border-radius:12px;padding:10px 20px;
-    background:rgba(255,255,255,0.3);
-    border:1px solid rgba(255,255,255,0.6);
-    backdrop-filter:blur(10px);
-    color:#0a2540;font-weight:500;
-    margin-bottom:10px;
+    border:none;cursor:pointer;border-radius:12px;
+    padding:10px 20px;background:rgba(255,255,255,0.3);
+    border:1px solid rgba(255,255,255,0.6);backdrop-filter:blur(10px);
+    color:#0a2540;font-weight:500;margin:5px;
     box-shadow:0 4px 12px rgba(0,153,255,0.2);
   }
-  .add-btn:hover{
-    transform:scale(1.05);
-    box-shadow:0 6px 20px rgba(0,153,255,0.35);
-  }
+  .add-btn:hover{transform:scale(1.05);box-shadow:0 6px 20px rgba(0,153,255,0.35);}
   .table-container{
     width:95%;overflow-x:auto;margin-bottom:20px;
     background:rgba(255,255,255,0.3);
@@ -67,24 +54,32 @@
   th,td{padding:10px 14px;border-bottom:1px solid rgba(0,0,0,0.05);}
   th{background:rgba(255,255,255,0.5);backdrop-filter:blur(8px);}
   td[contenteditable="true"]{background:rgba(255,255,255,0.7);}
-  .actions button{background:none;border:none;cursor:pointer;font-size:1rem;}
+  .actions button{background:none;border:none;cursor:pointer;font-size:1rem;margin:0 2px;}
   .edit-btn{color:#2563eb;}
   .delete-btn{color:#dc2626;}
+  .serve-btn{color:#10b981;}
   .restore-btn{color:#10b981;}
+  .modal-bg{
+    display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+    background:rgba(0,0,0,0.25);backdrop-filter:blur(4px);
+    justify-content:center;align-items:center;z-index:100;
+  }
+  .modal{
+    background:rgba(255,255,255,0.3);
+    border:1px solid rgba(255,255,255,0.6);
+    border-radius:20px;padding:20px;min-width:300px;max-width:90%;
+    box-shadow:0 4px 15px rgba(0,153,255,0.3),inset 0 0 20px rgba(255,255,255,0.1);
+    backdrop-filter:blur(15px);position:relative;
+  }
+  .close-btn{position:absolute;top:8px;right:12px;cursor:pointer;font-size:1.2rem;color:#555;}
+  .modal input{width:100%;margin-bottom:10px;padding:8px;
+    border-radius:8px;border:1px solid rgba(255,255,255,0.6);
+    background:rgba(255,255,255,0.5);}
   footer{
-    margin-top:auto;
-    width:100%;
-    text-align:center;
-    padding:10px 0;
-    font-size:0.9rem;
-    color:#ffffff;
+    margin-top:auto;width:100%;text-align:center;padding:10px 0;
+    font-size:0.9rem;color:#ffffff;
     background:linear-gradient(to right,#79b6f3,#a8d1ff);
     box-shadow:0 -2px 10px rgba(0,0,0,0.05);
-  }
-  @media(max-width:768px){
-    .token-card{min-width:90px;padding:8px 10px;}
-    .token-value{font-size:1.1rem;}
-    th,td{font-size:0.85rem;padding:8px;}
   }
 </style>
 </head>
@@ -103,7 +98,7 @@
   <div class="table-container">
     <table>
       <thead>
-        <tr><th>Patient ID</th><th>Token</th><th>Name</th><th>Age</th>
+        <tr><th>ID</th><th>Token</th><th>Name</th><th>Age</th>
         <th>Mobile</th><th>Address</th><th>Illness</th><th>Time</th><th>Actions</th></tr>
       </thead>
       <tbody id="patientList"></tbody>
@@ -118,126 +113,179 @@
     </table>
   </div>
 
+  <!-- Add patient modal -->
+  <div class="modal-bg" id="modalBg">
+    <div class="modal">
+      <span class="close-btn" onclick="closeModal()">✖</span>
+      <h3 id="modalTitle">Add Patient</h3>
+      <input id="pName" placeholder="Name">
+      <input id="pAge" placeholder="Age">
+      <input id="pMobile" placeholder="Mobile">
+      <input id="pAddress" placeholder="Address">
+      <input id="pIllness" placeholder="Illness">
+      <button class="add-btn" onclick="savePatient()">Save</button>
+    </div>
+  </div>
+
   <footer>© 2025 Lucknow Health & Skin Care Centre</footer>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getDatabase, ref, set, update, remove, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, update, remove, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-  const firebaseConfig = {
-    apiKey:"AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
-    authDomain:"clinic-token-system-e1430.firebaseapp.com",
-    databaseURL:"https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId:"clinic-token-system-e1430",
-    storageBucket:"clinic-token-system-e1430.appspot.com",
-    messagingSenderId:"1014958043227",
-    appId:"1:1014958043227:web:c5a33675ddf76572274f7e"
-  };
+const firebaseConfig = {
+  apiKey:"AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
+  authDomain:"clinic-token-system-e1430.firebaseapp.com",
+  databaseURL:"https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"clinic-token-system-e1430",
+  storageBucket:"clinic-token-system-e1430.appspot.com",
+  messagingSenderId:"1014958043227",
+  appId:"1:1014958043227:web:c5a33675ddf76572274f7e"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-  const currentEl=document.getElementById("currentToken");
-  const nextEl=document.getElementById("nextToken");
-  const remainingEl=document.getElementById("remainingTokens");
-  const patientList=document.getElementById("patientList");
-  const deletedList=document.getElementById("deletedList");
+const currentEl=document.getElementById("currentToken");
+const nextEl=document.getElementById("nextToken");
+const remainingEl=document.getElementById("remainingTokens");
+const patientList=document.getElementById("patientList");
+const deletedList=document.getElementById("deletedList");
+const modalBg=document.getElementById("modalBg");
 
-  function syncTokens(current, next, remaining) {
-    set(ref(db, "tokens/current"), current || "");
-    set(ref(db, "tokens/next"), next || "");
-    set(ref(db, "tokens/remaining"), remaining || "");
-    currentEl.textContent = current || "";
-    nextEl.textContent = next || "";
-    remainingEl.textContent = remaining || "";
+function openAdd(){modalBg.style.display="flex";}
+function closeModal(){modalBg.style.display="none";}
+window.openAdd=openAdd;window.closeModal=closeModal;
+
+async function getNextId(){
+  const snap=await get(ref(db,"patients"));
+  const data=snap.val()||{};
+  const ids=Object.keys(data).map(k=>parseInt(k)).filter(n=>!isNaN(n));
+  return ids.length?Math.max(...ids)+1:1;
+}
+
+async function savePatient(){
+  const name=pName.value.trim(); if(!name)return alert("Name required");
+  const now=new Date().toLocaleString();
+  const id=await getNextId();
+  const obj={id:id,token:id,name,age:pAge.value,mobile:pMobile.value,address:pAddress.value,illness:pIllness.value,time:now};
+  await set(ref(db,"patients/"+id),obj);
+  modalBg.style.display="none";
+  pName.value=pAge.value=pMobile.value=pAddress.value=pIllness.value="";
+  updateTokenSummary();
+}
+
+async function serveToken(id){
+  const psSnap=await get(ref(db,"patients"));
+  const ps=psSnap.val()||{};
+  const ids=Object.keys(ps).map(k=>parseInt(k,10)).filter(n=>!isNaN(n)).sort((a,b)=>a-b);
+  if(ids.length===0)return;
+
+  const next=ids.find(i=>i>id);
+  if(!next){ // ✅ All served
+    await set(ref(db,"tokens/current"), 0);
+    await set(ref(db,"tokens/next"), 0);
+    await set(ref(db,"tokens/remaining"), 0);
+    currentEl.textContent="0"; nextEl.textContent="0"; remainingEl.textContent="0";
+    return;
   }
 
-  function updateTokenSummary() {
-    get(ref(db, "patients")).then(snap => {
-      const data = snap.val() || {};
-      const ids = Object.keys(data).map(k => parseInt(k)).filter(n => !isNaN(n));
-      if (ids.length === 0) {
-        syncTokens("", "", "");
-        return;
-      }
-      const total = ids.length;
-      get(ref(db, "tokens/current")).then(cSnap => {
-        const current = cSnap.exists() ? parseInt(cSnap.val()) : 0;
-        const next = current < total ? current + 1 : "";
-        const remaining = current === 0 ? total : Math.max(total - current, 0);
-        syncTokens(current || "", next || "", remaining || "");
-      });
-    });
+  const remaining=ids.filter(i=>i>next).length;
+  await set(ref(db,"tokens/current"), next);
+  await set(ref(db,"tokens/next"), ids.find(i=>i>next)||0);
+  await set(ref(db,"tokens/remaining"), remaining);
+  updateTokenSummary();
+}
+
+async function updateTokenSummary(){
+  const snap=await get(ref(db,"patients"));
+  const data=snap.val()||{};
+  const ids=Object.keys(data).map(k=>parseInt(k)).filter(n=>!isNaN(n)).sort((a,b)=>a-b);
+  if(ids.length===0){
+    await set(ref(db,"tokens/current"),0);
+    await set(ref(db,"tokens/next"),0);
+    await set(ref(db,"tokens/remaining"),0);
+    currentEl.textContent=nextEl.textContent=remainingEl.textContent="0";
+    return;
   }
+  const total=ids.length;
+  const cSnap=await get(ref(db,"tokens/current"));
+  let current=cSnap.exists()&&cSnap.val()?parseInt(cSnap.val()):ids[0];
+  if(!ids.includes(current))current=ids[0];
+  const next=ids.find(i=>i>current)||0;
+  const remaining=next===0?0:ids.filter(i=>i>current).length;
+  await set(ref(db,"tokens/current"),current);
+  await set(ref(db,"tokens/next"),next);
+  await set(ref(db,"tokens/remaining"),remaining);
+  currentEl.textContent=current||0;
+  nextEl.textContent=next||0;
+  remainingEl.textContent=remaining||0;
+}
 
-  onValue(ref(db,"patients"),()=>updateTokenSummary());
-  onValue(ref(db,"deleted"),()=>updateTokenSummary());
-
-  function loadPatients(){
-    onValue(ref(db,"patients"),snap=>{
-      patientList.innerHTML="";
-      snap.forEach(ch=>{
-        const v=ch.val();
-        const tr=document.createElement("tr");
-        tr.innerHTML=`
-          <td>${v.id}</td>
-          <td>${v.token}</td>
-          <td contenteditable="true" onblur="saveEdit(${v.id}, 'name', this.innerText)">${v.name||""}</td>
-          <td contenteditable="true" onblur="saveEdit(${v.id}, 'age', this.innerText)">${v.age||""}</td>
-          <td contenteditable="true" onblur="saveEdit(${v.id}, 'mobile', this.innerText)">${v.mobile||""}</td>
-          <td contenteditable="true" onblur="saveEdit(${v.id}, 'address', this.innerText)">${v.address||""}</td>
-          <td contenteditable="true" onblur="saveEdit(${v.id}, 'illness', this.innerText)">${v.illness||""}</td>
-          <td>${v.time||""}</td>
-          <td class='actions'>
-            <button class='edit-btn' onclick='toggleEdit(this,${v.id})'>✏️</button>
-            <button class='delete-btn' onclick='deletePatient(${v.id})'>🗑️</button>
-          </td>`;
-        patientList.appendChild(tr);
-      });
+function loadPatients(){
+  onValue(ref(db,"patients"),snap=>{
+    patientList.innerHTML="";
+    const data=snap.val()||{};
+    const arr=Object.values(data).sort((a,b)=>a.id-b.id);
+    arr.forEach(v=>{
+      const tr=document.createElement("tr");
+      tr.innerHTML=`
+        <td>${v.id}</td><td>${v.token}</td>
+        <td contenteditable="true" onblur="saveEdit(${v.id},'name',this.innerText)">${v.name||""}</td>
+        <td contenteditable="true" onblur="saveEdit(${v.id},'age',this.innerText)">${v.age||""}</td>
+        <td contenteditable="true" onblur="saveEdit(${v.id},'mobile',this.innerText)">${v.mobile||""}</td>
+        <td contenteditable="true" onblur="saveEdit(${v.id},'address',this.innerText)">${v.address||""}</td>
+        <td contenteditable="true" onblur="saveEdit(${v.id},'illness',this.innerText)">${v.illness||""}</td>
+        <td>${v.time||""}</td>
+        <td class='actions'>
+          <button class='edit-btn'>✏️</button>
+          <button class='serve-btn' onclick='serveToken(${v.id})'>✅</button>
+          <button class='delete-btn' onclick='deletePatient(${v.id})'>🗑️</button>
+        </td>`;
+      patientList.appendChild(tr);
     });
+  });
+}
+loadPatients();
 
-    onValue(ref(db,"deleted"),snap=>{
-      deletedList.innerHTML="";
-      snap.forEach(ch=>{
-        const v=ch.val();
-        const tr=document.createElement("tr");
-        tr.innerHTML=`<td>${v.id}</td><td>${v.token}</td><td>${v.name}</td>
-        <td><button class='restore-btn' onclick='restore(${v.id})'>♻️</button>
-        <button class='delete-btn' onclick='confirmDelete(${v.id})'>🗑️</button></td>`;
-        deletedList.appendChild(tr);
-      });
+function loadDeleted(){
+  onValue(ref(db,"deleted"),snap=>{
+    deletedList.innerHTML="";
+    const data=snap.val()||{};
+    Object.values(data).forEach(v=>{
+      const tr=document.createElement("tr");
+      tr.innerHTML=`<td>${v.id}</td><td>${v.token}</td><td>${v.name}</td>
+      <td><button class='restore-btn' onclick='restore(${v.id})'>♻️</button>
+      <button class='delete-btn' onclick='confirmDelete(${v.id})'>🗑️</button></td>`;
+      deletedList.appendChild(tr);
     });
+  });
+}
+loadDeleted();
+
+onValue(ref(db,"tokens/current"),s=>currentEl.textContent=s.exists()?s.val():"0");
+onValue(ref(db,"tokens/next"),s=>nextEl.textContent=s.exists()?s.val():"0");
+onValue(ref(db,"tokens/remaining"),s=>remainingEl.textContent=s.exists()?s.val():"0");
+onValue(ref(db,"patients"),()=>updateTokenSummary());
+onValue(ref(db,"deleted"),()=>updateTokenSummary());
+
+window.saveEdit=(id,f,v)=>update(ref(db,"patients/"+id),{[f]:v.trim()});
+window.deletePatient=async id=>{
+  const s=await get(ref(db,"patients/"+id));if(!s.exists())return;
+  const v=s.val();await set(ref(db,"deleted/"+id),v);await remove(ref(db,"patients/"+id));updateTokenSummary();
+};
+window.restore=async id=>{
+  const s=await get(ref(db,"deleted/"+id));if(!s.exists())return;
+  const v=s.val();await set(ref(db,"patients/"+id),v);await remove(ref(db,"deleted/"+id));updateTokenSummary();
+};
+window.confirmDelete=async id=>{
+  if(confirm("Are you sure you want to permanently delete this record?")){
+    await remove(ref(db,"deleted/"+id));updateTokenSummary();
   }
-  loadPatients();
+};
+window.toggleDeleted=()=>{const s=document.getElementById("deletedSection");s.style.display=s.style.display==="none"?"block":"none";};
 
-  window.saveEdit=function(id,field,value){ update(ref(db,"patients/"+id),{[field]:value.trim()}); };
-  window.toggleEdit=function(btn,id){btn.innerText=btn.innerText==="✏️"?"✅":"✏️";};
-  window.deletePatient=async function(id){
-    const snap=await get(ref(db,"patients/"+id));
-    if(!snap.exists())return;
-    const v=snap.val();
-    await set(ref(db,"deleted/"+id),v);
-    await remove(ref(db,"patients/"+id));
-    updateTokenSummary();
-  };
-  window.restore=async function(id){
-    const snap=await get(ref(db,"deleted/"+id));
-    if(!snap.exists())return;
-    const v=snap.val();
-    await set(ref(db,"patients/"+id),v);
-    await remove(ref(db,"deleted/"+id));
-    updateTokenSummary();
-  };
-  window.confirmDelete=async function(id){
-    if(confirm("Are you sure you want to permanently delete this record?")){
-      await remove(ref(db,"deleted/"+id));
-      updateTokenSummary();
-    }
-  };
-  window.toggleDeleted=function(){
-    const sec=document.getElementById("deletedSection");
-    sec.style.display=sec.style.display==="none"?"block":"none";
-  };
+updateTokenSummary();
 </script>
 </body>
 </html>
