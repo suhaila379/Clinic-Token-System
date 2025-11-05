@@ -148,7 +148,7 @@
     <input id="mobile" placeholder="Mobile / मोबाइल" required>
     <input id="address" placeholder="Address / पता" required>
     <textarea id="illness" placeholder="Illness / बीमारी" required></textarea>
-    <button onclick="getToken()">Get Token</button>
+    <button id="getTokenBtn">Get Token</button>
   </div>
 
   <div class="token-display" id="tokenSection" style="display:none;">
@@ -197,54 +197,80 @@
     const db = getDatabase(app);
     const auth = getAuth(app);
 
+    // get references to inputs (module scope - must use getElementById)
+    const nameInput = document.getElementById('name');
+    const ageInput = document.getElementById('age');
+    const mobileInput = document.getElementById('mobile');
+    const addressInput = document.getElementById('address');
+    const illnessInput = document.getElementById('illness');
+    const getTokenBtn = document.getElementById('getTokenBtn');
+
+    // Live update for current serving token
     onValue(ref(db, "tokens/current"), snap => {
       document.getElementById("currentToken").textContent = snap.val() || "--";
     });
 
-    window.getToken = async () => {
-      const fields = [name, age, mobile, address, illness];
-      let valid = true;
-      fields.forEach(f => {
-        f.classList.remove("error");
-        if (!f.value.trim()) {
-          f.classList.add("error");
-          valid = false;
-        }
+    // helper to flash required fields (red) — no popup
+    function flashErrors(inputs) {
+      inputs.forEach(i => {
+        i.classList.add('error');
       });
-      if (!valid) {
-        setTimeout(() => fields.forEach(f => f.classList.remove("error")), 2000);
+      setTimeout(() => inputs.forEach(i => i.classList.remove('error')), 1800);
+    }
+
+    // Generate new token — bound to button
+    async function handleGetToken() {
+      const inputs = [nameInput, ageInput, mobileInput, addressInput, illnessInput];
+      const missing = inputs.filter(i => !i.value || !i.value.toString().trim());
+      if (missing.length) {
+        flashErrors(missing);
         return;
       }
 
       try {
+        // fetch current patients (keys are numeric strings)
         const snap = await get(ref(db, "patients"));
         const data = snap.val() || {};
-        const ids = Object.keys(data).map(k => parseInt(k)).filter(n => !isNaN(n));
+
+        // compute next numeric id (handles existing numeric keys)
+        const ids = Object.keys(data).map(k => parseInt(k, 10)).filter(n => !isNaN(n));
         const newId = ids.length ? Math.max(...ids) + 1 : 1;
+
         const info = {
           id: newId,
           token: newId,
-          name: name.value.trim(),
-          age: age.value.trim(),
-          mobile: mobile.value.trim(),
-          address: address.value.trim(),
-          illness: illness.value.trim(),
+          name: nameInput.value.trim(),
+          age: ageInput.value.trim(),
+          mobile: mobileInput.value.trim(),
+          address: addressInput.value.trim(),
+          illness: illnessInput.value.trim(),
           time: new Date().toLocaleString()
         };
 
+        // write patient using numeric key
         await set(ref(db, "patients/" + newId), info);
+
+        // update token tracking nodes
         await set(ref(db, "tokens/current"), newId);
         await set(ref(db, "tokens/next"), newId + 1);
-        await set(ref(db, "tokens/remaining"), newId);
+        // remaining can be count of waiting (keep same semantics as earlier)
+        const remainingCount = (Object.keys(data).length) + 1;
+        await set(ref(db, "tokens/remaining"), remainingCount);
 
+        // show user's token
         document.getElementById("formCard").style.display = "none";
         document.getElementById("tokenSection").style.display = "flex";
         document.getElementById("yourToken").textContent = newId;
-      } catch (error) {
-        console.error("Firebase write failed:", error);
+      } catch (err) {
+        console.error("Failed to write token:", err);
+        // keep UI silent per your request — but log for debugging
       }
-    };
+    }
 
+    // bind click event
+    getTokenBtn.addEventListener('click', handleGetToken);
+
+    // login modal handlers (unchanged)
     window.openLogin = () => document.getElementById("loginModal").style.display = "flex";
     window.closeLogin = () => document.getElementById("loginModal").style.display = "none";
 
@@ -255,6 +281,7 @@
         await signInWithEmailAndPassword(auth, email, pass);
         window.location.href = "doctor.html";
       } catch {
+        // keep the same behaviour you used earlier
         alert("Invalid credentials. Please try again.");
       }
     };
