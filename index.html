@@ -200,7 +200,7 @@
       authDomain: "clinic-token-system-e1430.firebaseapp.com",
       databaseURL: "https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "clinic-token-system-e1430",
-      storageBucket: "clinic-token-system-e1430.firebasestorage.app",
+      storageBucket: "clinic-token-system-e1430.appspot.com",
       messagingSenderId: "1014958043227",
       appId: "1:1014958043227:web:c5a33675ddf76572274f7e"
     };
@@ -223,18 +223,28 @@
       const illnessVal = illness.value.trim();
       if (!nameVal || !mobileVal) return alert("Please fill all required fields / कृपया सभी आवश्यक विवरण भरें");
 
-      const snap = await get(ref(db, "patients"));
-      const data = snap.val() || {};
-      const newId = Object.keys(data).length + 1;
-      const token = newId;
-      const info = { id: newId, token, name: nameVal, age: ageVal, mobile: mobileVal, address: addressVal, illness: illnessVal, time: new Date().toLocaleString() };
-      await set(ref(db, "patients/" + newId), info);
-      await set(ref(db, "tokens/current"), token);
-      await set(ref(db, "tokens/next"), token + 1);
-      await set(ref(db, "tokens/remaining"), Object.keys(data).length + 1);
-      document.getElementById("formCard").style.display = "none";
-      document.getElementById("tokenSection").style.display = "flex";
-      document.getElementById("yourToken").textContent = token;
+      try {
+        const snap = await get(ref(db, "patients"));
+        const data = snap.val() || {};
+        const ids = Object.keys(data).map(k => parseInt(k)).filter(n => !isNaN(n));
+        const newId = ids.length ? Math.max(...ids) + 1 : 1;
+
+        const token = newId;
+        const info = { id: newId, token, name: nameVal, age: ageVal, mobile: mobileVal, address: addressVal, illness: illnessVal, time: new Date().toLocaleString() };
+        await set(ref(db, "patients/" + newId), info);
+
+        // update token info
+        await set(ref(db, "tokens/current"), token);
+        await set(ref(db, "tokens/next"), token + 1);
+        await set(ref(db, "tokens/remaining"), newId);
+
+        document.getElementById("formCard").style.display = "none";
+        document.getElementById("tokenSection").style.display = "flex";
+        document.getElementById("yourToken").textContent = token;
+      } catch (error) {
+        console.error("Firebase write failed:", error);
+        alert("Unable to generate token. Please try again later.");
+      }
     };
 
     // Login modal handlers
