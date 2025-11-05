@@ -1,145 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Doctor Dashboard – Lucknow Health & Skin Care Centre</title>
 <style>
-  *{box-sizing:border-box;}
-  body{
-    font-family:"Poppins",sans-serif;
-    margin:0;
-    background:linear-gradient(135deg,#e3f2fd,#ffffff);
-    color:#0a2540;
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-  }
-  .clinic-header{
-    margin-top:20px;font-size:1.3rem;font-weight:600;
-    background:rgba(255,255,255,0.3);
-    border-radius:20px;padding:10px 28px;color:#0a2540;
-    backdrop-filter:blur(15px);
-    border:1px solid rgba(255,255,255,0.6);
-    box-shadow:0 4px 15px rgba(0,153,255,0.25),inset 0 0 20px rgba(255,255,255,0.1);
-  }
-  h2{font-weight:500;margin:12px 0;color:#255aa1;}
-  .token-cards{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:15px;}
-  .token-card{
-    background:rgba(255,255,255,0.3);
-    border:1px solid rgba(255,255,255,0.6);
-    border-radius:16px;padding:10px 16px;min-width:110px;
-    text-align:center;backdrop-filter:blur(15px);
-    box-shadow:0 4px 15px rgba(0,153,255,0.2),inset 0 0 20px rgba(255,255,255,0.1);
-  }
-  .token-card h3{margin:4px 0;font-size:0.9rem;color:#3671b3;}
-  .token-value{font-weight:600;font-size:1.3rem;}
-  .add-btn{
-    border:none;cursor:pointer;border-radius:12px;
-    padding:10px 20px;background:rgba(255,255,255,0.3);
-    border:1px solid rgba(255,255,255,0.6);backdrop-filter:blur(10px);
-    color:#0a2540;font-weight:500;margin:5px;
-    box-shadow:0 4px 12px rgba(0,153,255,0.2);
-  }
-  .add-btn:hover{transform:scale(1.05);box-shadow:0 6px 20px rgba(0,153,255,0.35);}
-  .table-container{
-    width:95%;overflow-x:auto;margin-bottom:20px;
-    background:rgba(255,255,255,0.3);
-    border:1px solid rgba(255,255,255,0.6);
-    border-radius:16px;backdrop-filter:blur(15px);
-    box-shadow:0 4px 15px rgba(0,153,255,0.2),inset 0 0 20px rgba(255,255,255,0.1);
-  }
-  table{width:100%;border-collapse:collapse;}
-  th,td{padding:10px 14px;border-bottom:1px solid rgba(0,0,0,0.05);}
-  th{background:rgba(255,255,255,0.5);backdrop-filter:blur(8px);}
-  td[contenteditable="true"]{background:rgba(255,255,255,0.7);}
-  .actions button{background:none;border:none;cursor:pointer;font-size:1rem;margin:0 2px;}
-  .edit-btn{color:#2563eb;}
-  .delete-btn{color:#dc2626;}
-  .serve-btn{color:#10b981;}
-  .restore-btn{color:#10b981;}
-  .modal-bg{
-    display:none;position:fixed;top:0;left:0;right:0;bottom:0;
-    background:rgba(0,0,0,0.25);backdrop-filter:blur(4px);
-    justify-content:center;align-items:center;z-index:100;
-  }
-  .modal{
-    background:rgba(255,255,255,0.3);
-    border:1px solid rgba(255,255,255,0.6);
-    border-radius:20px;padding:20px;min-width:300px;max-width:90%;
-    box-shadow:0 4px 15px rgba(0,153,255,0.3),inset 0 0 20px rgba(255,255,255,0.1);
-    backdrop-filter:blur(15px);position:relative;
-  }
-  .close-btn{position:absolute;top:8px;right:12px;cursor:pointer;font-size:1.2rem;color:#555;}
-  .modal input{width:100%;margin-bottom:10px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.6);background:rgba(255,255,255,0.5);}
-  footer{
-    margin-top:auto;width:100%;text-align:center;padding:10px 0;
-    font-size:0.9rem;color:#ffffff;
-    background:linear-gradient(to right,#79b6f3,#a8d1ff);
-    box-shadow:0 -2px 10px rgba(0,0,0,0.05);
-  }
-
-  /* small responsive tweaks */
-  @media (max-width:768px){
-    .token-card{min-width:90px;padding:8px 10px;}
-    .token-value{font-size:1.05rem;}
-    th,td{padding:8px;font-size:0.9rem;}
-  }
+body{font-family:"Poppins",sans-serif;margin:0;background:linear-gradient(135deg,#e3f2fd,#ffffff);
+color:#0a2540;min-height:100vh;display:flex;flex-direction:column;align-items:center;}
+.clinic-header{margin-top:20px;font-size:1.3rem;font-weight:600;background:rgba(255,255,255,0.3);
+border-radius:20px;padding:10px 28px;color:#0a2540;backdrop-filter:blur(15px);
+border:1px solid rgba(255,255,255,0.6);box-shadow:0 4px 15px rgba(0,153,255,0.25),inset 0 0 20px rgba(255,255,255,0.1);}
+h2{font-weight:500;margin:12px 0;color:#255aa1;}
+.token-cards{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:15px;}
+.token-card{background:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.6);border-radius:16px;
+padding:10px 16px;min-width:110px;text-align:center;backdrop-filter:blur(15px);
+box-shadow:0 4px 15px rgba(0,153,255,0.2),inset 0 0 20px rgba(255,255,255,0.1);}
+.token-card h3{margin:4px 0;font-size:0.9rem;color:#3671b3;}
+.token-value{font-weight:600;font-size:1.3rem;}
+.add-btn{border:none;cursor:pointer;border-radius:12px;padding:10px 20px;background:rgba(255,255,255,0.3);
+border:1px solid rgba(255,255,255,0.6);backdrop-filter:blur(10px);color:#0a2540;font-weight:500;margin:5px;
+box-shadow:0 4px 12px rgba(0,153,255,0.2);}
+.add-btn:hover{transform:scale(1.05);box-shadow:0 6px 20px rgba(0,153,255,0.35);}
+.table-container{width:95%;overflow-x:auto;margin-bottom:20px;background:rgba(255,255,255,0.3);
+border:1px solid rgba(255,255,255,0.6);border-radius:16px;backdrop-filter:blur(15px);
+box-shadow:0 4px 15px rgba(0,153,255,0.2),inset 0 0 20px rgba(255,255,255,0.1);}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:10px 14px;border-bottom:1px solid rgba(0,0,0,0.05);}
+th{background:rgba(255,255,255,0.5);backdrop-filter:blur(8px);}
+.actions button{
+  border:none;cursor:pointer;font-size:1rem;margin:0 3px;padding:6px 10px;border-radius:10px;
+  color:#0a2540;font-weight:500;backdrop-filter:blur(8px);transition:transform .15s ease,box-shadow .15s ease;
+}
+.actions button:hover{transform:scale(1.15);}
+.serve-btn{background:rgba(16,185,129,0.25);border:1px solid rgba(16,185,129,0.4);}
+.edit-btn{background:rgba(34,197,94,0.25);border:1px solid rgba(34,197,94,0.4);}
+.delete-btn{background:rgba(220,38,38,0.25);border:1px solid rgba(220,38,38,0.4);}
+.restore-btn{background:rgba(59,130,246,0.25);border:1px solid rgba(59,130,246,0.4);}
+details summary{background:rgba(255,255,255,0.5);padding:10px;border-radius:10px;cursor:pointer;
+font-weight:500;margin:10px 0;}
+.modal-bg{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.25);
+backdrop-filter:blur(4px);justify-content:center;align-items:center;z-index:100;}
+.modal{background:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.6);border-radius:20px;
+padding:20px;min-width:300px;max-width:90%;box-shadow:0 4px 15px rgba(0,153,255,0.3),
+inset 0 0 20px rgba(255,255,255,0.1);backdrop-filter:blur(15px);position:relative;}
+.close-btn{position:absolute;top:8px;right:12px;cursor:pointer;font-size:1.2rem;color:#555;}
+.modal input{width:100%;margin-bottom:10px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.6);
+background:rgba(255,255,255,0.5);}
+footer{margin-top:auto;width:100%;text-align:center;padding:10px 0;font-size:0.9rem;color:#fff;
+background:linear-gradient(to right,#79b6f3,#a8d1ff);box-shadow:0 -2px 10px rgba(0,0,0,0.05);}
 </style>
 </head>
 <body>
-  <div class="clinic-header">Lucknow Health & Skin Care Centre</div>
-  <h2>Doctor Dashboard</h2>
+<div class="clinic-header">Lucknow Health & Skin Care Centre</div>
+<h2>Doctor Dashboard</h2>
 
-  <div class="token-cards">
-    <div class="token-card"><h3>Current</h3><div class="token-value" id="currentToken">0</div></div>
-    <div class="token-card"><h3>Next</h3><div class="token-value" id="nextToken">0</div></div>
-    <div class="token-card"><h3>Remaining</h3><div class="token-value" id="remainingTokens">0</div></div>
-  </div>
+<div class="token-cards">
+  <div class="token-card"><h3>Current</h3><div class="token-value" id="currentToken">0</div></div>
+  <div class="token-card"><h3>Next</h3><div class="token-value" id="nextToken">0</div></div>
+  <div class="token-card"><h3>Remaining</h3><div class="token-value" id="remainingTokens">0</div></div>
+</div>
 
-  <button class="add-btn" onclick="openAdd()">➕ Add Patient</button>
+<button class="add-btn" onclick="openAdd()">➕ Add Patient</button>
 
+<div class="table-container">
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Token</th><th>Name</th><th>Age</th><th>Mobile</th>
+      <th>Address</th><th>Illness</th><th>Time</th><th>Actions</th></tr>
+    </thead>
+    <tbody id="patientList"></tbody>
+  </table>
+</div>
+
+<!-- Served Patients Collapsed Section -->
+<details>
+  <summary>Served Patients</summary>
   <div class="table-container">
     <table>
       <thead>
-        <tr><th>ID</th><th>Token</th><th>Name</th><th>Age</th>
-        <th>Mobile</th><th>Address</th><th>Illness</th><th>Time</th><th>Actions</th></tr>
+        <tr><th>ID</th><th>Token</th><th>Name</th><th>Age</th><th>Mobile</th>
+        <th>Address</th><th>Illness</th><th>Time</th><th>Actions</th></tr>
       </thead>
-      <tbody id="patientList"></tbody>
+      <tbody id="servedList"></tbody>
     </table>
   </div>
+</details>
 
-  <button class="add-btn" onclick="toggleDeleted()">🗂 View Deleted History</button>
-  <div id="deletedSection" style="display:none;width:95%;" class="table-container">
+<!-- Deleted History Collapsed Section -->
+<details>
+  <summary>Deleted History</summary>
+  <div class="table-container">
     <table>
       <thead><tr><th>ID</th><th>Token</th><th>Name</th><th>Actions</th></tr></thead>
       <tbody id="deletedList"></tbody>
     </table>
   </div>
+</details>
 
-  <!-- Add patient modal -->
-  <div class="modal-bg" id="modalBg">
-    <div class="modal">
-      <span class="close-btn" onclick="closeModal()">✖</span>
-      <h3 id="modalTitle">Add Patient</h3>
-      <input id="pName" placeholder="Name">
-      <input id="pAge" placeholder="Age">
-      <input id="pMobile" placeholder="Mobile">
-      <input id="pAddress" placeholder="Address">
-      <input id="pIllness" placeholder="Illness">
-      <button class="add-btn" onclick="savePatient()">Save</button>
-    </div>
+<!-- Add Patient Modal -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <span class="close-btn" onclick="closeModal()">✖</span>
+    <h3>Add Patient</h3>
+    <input id="pName" placeholder="Name" />
+    <input id="pAge" placeholder="Age" />
+    <input id="pMobile" placeholder="Mobile" />
+    <input id="pAddress" placeholder="Address" />
+    <input id="pIllness" placeholder="Illness" />
+    <button class="add-btn" onclick="savePatient()">Save</button>
   </div>
+</div>
 
-  <footer>© 2025 Lucknow Health & Skin Care Centre</footer>
+<footer>© 2025 Lucknow Health & Skin Care Centre</footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, set, update, remove, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-/* Firebase config — keep yours as before */
-const firebaseConfig = {
+/* Firebase Config */
+const app = initializeApp({
   apiKey:"AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
   authDomain:"clinic-token-system-e1430.firebaseapp.com",
   databaseURL:"https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -147,244 +126,120 @@ const firebaseConfig = {
   storageBucket:"clinic-token-system-e1430.appspot.com",
   messagingSenderId:"1014958043227",
   appId:"1:1014958043227:web:c5a33675ddf76572274f7e"
-};
-
-const app = initializeApp(firebaseConfig);
+});
 const db = getDatabase(app);
 
-const currentEl=document.getElementById("currentToken");
-const nextEl=document.getElementById("nextToken");
-const remainingEl=document.getElementById("remainingTokens");
-const patientList=document.getElementById("patientList");
-const deletedList=document.getElementById("deletedList");
+/* Modal */
 const modalBg=document.getElementById("modalBg");
+function openAdd(){ modalBg.style.display="flex"; }
+function closeModal(){ modalBg.style.display="none"; }
+window.openAdd=openAdd; window.closeModal=closeModal;
 
-/* Modal open/close */
-function openAdd(){ modalBg.style.display = "flex"; }
-function closeModal(){ modalBg.style.display = "none"; }
-window.openAdd = openAdd; window.closeModal = closeModal;
-
-/* Get next numeric ID for patients (ensures numeric sequential IDs) */
+/* Add Patient */
 async function getNextId(){
-  const snap = await get(ref(db,"patients"));
-  const data = snap.val() || {};
-  const ids = Object.keys(data).map(k => parseInt(k,10)).filter(n => !isNaN(n));
-  return ids.length ? Math.max(...ids)+1 : 1;
+  const snap=await get(ref(db,"patients"));
+  const data=snap.val()||{};
+  const ids=Object.keys(data).map(Number);
+  return ids.length?Math.max(...ids)+1:1;
 }
-
-/* Save new patient */
 async function savePatient(){
-  const name = (document.getElementById("pName").value || "").trim();
-  if(!name){ alert("Name required"); return; }
-  const age = (document.getElementById("pAge").value || "").trim();
-  const mobile = (document.getElementById("pMobile").value || "").trim();
-  const address = (document.getElementById("pAddress").value || "").trim();
-  const illness = (document.getElementById("pIllness").value || "").trim();
-  const now = new Date().toLocaleString();
-  const id = await getNextId();
-  const payload = { id: id, token: id, name, age, mobile, address, illness, time: now };
-  await set(ref(db,"patients/"+id), payload);
-  // clear and close modal
-  document.getElementById("pName").value = "";
-  document.getElementById("pAge").value = "";
-  document.getElementById("pMobile").value = "";
-  document.getElementById("pAddress").value = "";
-  document.getElementById("pIllness").value = "";
-  modalBg.style.display = "none";
-  await updateTokenSummary();
+  const name=pName.value.trim(); if(!name) return alert("Name required");
+  const id=await getNextId();
+  const payload={id,token:id,name,age:pAge.value,mobile:pMobile.value,address:pAddress.value,illness:pIllness.value,time:new Date().toLocaleString()};
+  await set(ref(db,"patients/"+id),payload);
+  [pName,pAge,pMobile,pAddress,pIllness].forEach(i=>i.value="");
+  closeModal();
 }
-window.savePatient = savePatient;
+window.savePatient=savePatient;
 
-/* Serve token for a specific patient id.
-   Behavior:
-   - If there is any patient with id > served id -> set current = served id, next = smallest id > served id, remaining = count(ids > served id)
-   - If no id > served id -> ALL served -> set all tokens to 0
-*/
-async function serveToken(servedId){
-  // normalize
-  const idNum = Number(servedId) || 0;
-  const psSnap = await get(ref(db,"patients"));
-  const ps = psSnap.val() || {};
-  const ids = Object.keys(ps).map(k=>parseInt(k,10)).filter(n=>!isNaN(n)).sort((a,b)=>a-b);
-
-  if(ids.length === 0){
-    // nothing — set zeros
-    await set(ref(db,"tokens/current"), 0);
-    await set(ref(db,"tokens/next"), 0);
-    await set(ref(db,"tokens/remaining"), 0);
-    currentEl.textContent = nextEl.textContent = remainingEl.textContent = "0";
-    return;
-  }
-
-  // If served id is not in list (maybe stale), pick the smallest id >= servedId; else use servedId
-  let servedIndex = ids.indexOf(idNum);
-  if(servedIndex === -1){
-    // pick first id >= idNum, or if not present, last id (to handle edge cases)
-    servedIndex = ids.findIndex(i => i >= idNum);
-    if(servedIndex === -1) servedIndex = ids.length - 1;
-  }
-
-  // Determine next id (the next to be served after marking servedIndex)
-  const nextId = (servedIndex + 1 < ids.length) ? ids[servedIndex + 1] : null;
-  if(nextId === null){
-    // All served — set all to 0
-    await set(ref(db,"tokens/current"), 0);
-    await set(ref(db,"tokens/next"), 0);
-    await set(ref(db,"tokens/remaining"), 0);
-    currentEl.textContent = nextEl.textContent = remainingEl.textContent = "0";
-    return;
-  }
-
-  // There is a next to serve
-  const currentToSet = ids[servedIndex]; // the id that was just served
-  const remainingCount = ids.filter(i => i > currentToSet).length;
-  await set(ref(db,"tokens/current"), currentToSet);
-  await set(ref(db,"tokens/next"), nextId);
-  await set(ref(db,"tokens/remaining"), remainingCount);
-
-  // Refresh summary UI
-  await updateTokenSummary();
-}
-window.serveToken = serveToken;
-
-/* Update token summary from patients and tokens/current — ensures consistent behavior */
-async function updateTokenSummary(){
-  const snap = await get(ref(db,"patients"));
-  const data = snap.val() || {};
-  const ids = Object.keys(data).map(k=>parseInt(k,10)).filter(n=>!isNaN(n)).sort((a,b)=>a-b);
-
-  if(ids.length === 0){
-    // no patients => all zeros
-    await set(ref(db,"tokens/current"), 0);
-    await set(ref(db,"tokens/next"), 0);
-    await set(ref(db,"tokens/remaining"), 0);
-    currentEl.textContent = "0";
-    nextEl.textContent = "0";
-    remainingEl.textContent = "0";
-    return;
-  }
-
-  const total = ids.length;
-  const currentSnap = await get(ref(db,"tokens/current"));
-  // use numeric current if available and present in ids, otherwise start from first id
-  let currentRaw = currentSnap.exists() ? currentSnap.val() : null;
-  let current = (currentRaw === null || currentRaw === "" || Number(currentRaw) === 0) ? null : Number(currentRaw);
-
-  if(current === null || !ids.includes(current)){
-    // if current is null or not part of present ids, default to first id (not served yet)
-    current = ids[0];
-    // But if tokens/current was 0 meaning all served, maintain zeros
-    if(currentRaw === 0 || currentRaw === "0"){
-      // all served earlier — keep zeros if there are no unserved ids greater than 0
-      // However since ids exist, there are patients — set current to first id
-      current = ids[0];
-    }
-  }
-
-  // if current is 0 (special meaning all served), convert to numeric 0 handled above
-  // Next is smallest id greater than current, or 0 if none
-  const next = ids.find(i => i > current) || 0;
-  const remaining = next === 0 ? 0 : ids.filter(i => i > current).length;
-
-  // If next === 0 and current is the last served, that implies all served -> set current=0, next=0, remaining=0
-  if(next === 0 && ids.includes(Number(current)) && ids[ids.length-1] <= Number(current)){
-    await set(ref(db,"tokens/current"), 0);
-    await set(ref(db,"tokens/next"), 0);
-    await set(ref(db,"tokens/remaining"), 0);
-    currentEl.textContent = nextEl.textContent = remainingEl.textContent = "0";
-    return;
-  }
-
-  // Otherwise set values appropriately
-  await set(ref(db,"tokens/current"), current);
-  await set(ref(db,"tokens/next"), next);
-  await set(ref(db,"tokens/remaining"), remaining);
-
-  currentEl.textContent = String(current || 0);
-  nextEl.textContent = String(next || 0);
-  remainingEl.textContent = String(remaining || 0);
-}
-
-/* Render patients table with inline editable fields and actions (serve/delete) */
-function loadPatients(){
-  onValue(ref(db,"patients"), snap => {
-    patientList.innerHTML = "";
-    const data = snap.val() || {};
-    const arr = Object.values(data).sort((a,b)=>a.id-b.id);
-    arr.forEach(v => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${v.id}</td>
-        <td>${v.token}</td>
-        <td contenteditable="true" onblur="saveEdit(${v.id},'name',this.innerText)">${v.name||""}</td>
-        <td contenteditable="true" onblur="saveEdit(${v.id},'age',this.innerText)">${v.age||""}</td>
-        <td contenteditable="true" onblur="saveEdit(${v.id},'mobile',this.innerText)">${v.mobile||""}</td>
-        <td contenteditable="true" onblur="saveEdit(${v.id},'address',this.innerText)">${v.address||""}</td>
-        <td contenteditable="true" onblur="saveEdit(${v.id},'illness',this.innerText)">${v.illness||""}</td>
-        <td>${v.time||""}</td>
-        <td class='actions'>
-          <button class='edit-btn'>✏️</button>
-          <button class='serve-btn' onclick='serveToken(${v.id})'>✅</button>
-          <button class='delete-btn' onclick='deletePatient(${v.id})'>🗑️</button>
-        </td>`;
-      patientList.appendChild(tr);
-    });
+/* Active Patients */
+onValue(ref(db,"patients"),snap=>{
+  patientList.innerHTML="";
+  const data=snap.val()||{};
+  Object.values(data).sort((a,b)=>a.id-b.id).forEach(v=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${v.id}</td><td>${v.token}</td><td>${v.name}</td><td>${v.age}</td>
+    <td>${v.mobile}</td><td>${v.address}</td><td>${v.illness}</td><td>${v.time}</td>
+    <td class='actions'>
+      <button class='serve-btn' onclick='serve(${v.id})'>✅</button>
+      <button class='delete-btn' onclick='del(${v.id})'>🔴❌</button>
+    </td>`;
+    patientList.appendChild(tr);
   });
-}
-loadPatients();
+});
 
-/* Deleted history listing */
-function loadDeleted(){
-  onValue(ref(db,"deleted"), snap => {
-    deletedList.innerHTML = "";
-    const data = snap.val() || {};
-    Object.values(data).forEach(v => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${v.id}</td><td>${v.token}</td><td>${v.name}</td>
-        <td><button class='restore-btn' onclick='restore(${v.id})'>♻️</button>
-        <button class='delete-btn' onclick='confirmDelete(${v.id})'>🗑️</button></td>`;
-      deletedList.appendChild(tr);
-    });
+/* Serve Patient */
+async function serve(id){
+  const s=await get(ref(db,"patients/"+id)); if(!s.exists()) return;
+  const v=s.val(); v.servedAt=new Date().toLocaleString();
+  await set(ref(db,"served/"+id),v); await remove(ref(db,"patients/"+id));
+}
+
+/* Delete Patient */
+async function del(id){
+  const s=await get(ref(db,"patients/"+id)); if(!s.exists()) return;
+  await set(ref(db,"deleted/"+id),s.val()); await remove(ref(db,"patients/"+id));
+}
+window.serve=serve; window.del=del;
+
+/* Served Patients */
+onValue(ref(db,"served"),snap=>{
+  servedList.innerHTML="";
+  const data=snap.val()||{};
+  Object.values(data).sort((a,b)=>a.id-b.id).forEach(v=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${v.id}</td><td>${v.token}</td><td>${v.name}</td><td>${v.age||""}</td>
+    <td>${v.mobile||""}</td><td>${v.address||""}</td><td>${v.illness||""}</td><td>${v.time||""}</td>
+    <td class='actions'>
+      <button class='edit-btn' onclick='editServed(${v.id})'>🟢✏️</button>
+      <button class='delete-btn' onclick='deleteServed(${v.id})'>🔴❌</button>
+      <button class='restore-btn' onclick='restoreServed(${v.id})'>🔁</button>
+    </td>`;
+    servedList.appendChild(tr);
   });
+});
+
+async function editServed(id){
+  const s=await get(ref(db,"served/"+id)); if(!s.exists()) return;
+  const name=prompt("Edit Name:",s.val().name||"");
+  if(name) await update(ref(db,"served/"+id),{name});
 }
-loadDeleted();
+async function deleteServed(id){ if(confirm("Delete record?")) await remove(ref(db,"served/"+id)); }
+async function restoreServed(id){
+  const s=await get(ref(db,"served/"+id)); if(!s.exists()) return;
+  await set(ref(db,"patients/"+id),s.val()); await remove(ref(db,"served/"+id));
+}
+window.editServed=editServed; window.deleteServed=deleteServed; window.restoreServed=restoreServed;
 
-/* Live listeners for token nodes to immediately update UI if changed elsewhere */
-onValue(ref(db,"tokens/current"), s => currentEl.textContent = (s.exists() ? String(s.val()) : "0"));
-onValue(ref(db,"tokens/next"), s => nextEl.textContent = (s.exists() ? String(s.val()) : "0"));
-onValue(ref(db,"tokens/remaining"), s => remainingEl.textContent = (s.exists() ? String(s.val()) : "0"));
-onValue(ref(db,"patients"), () => updateTokenSummary());
-onValue(ref(db,"deleted"), () => updateTokenSummary());
+/* Deleted Patients */
+onValue(ref(db,"deleted"),snap=>{
+  deletedList.innerHTML="";
+  const data=snap.val()||{};
+  Object.values(data).sort((a,b)=>a.id-b.id).forEach(v=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${v.id}</td><td>${v.token}</td><td>${v.name}</td>
+    <td class='actions'>
+      <button class='restore-btn' onclick='restoreDeleted(${v.id})'>🔁</button>
+      <button class='delete-btn' onclick='deleteDeleted(${v.id})'>🔴❌</button>
+    </td>`;
+    deletedList.appendChild(tr);
+  });
+});
 
-/* Helpers for edit/delete/restore */
-window.saveEdit = (id, field, value) => update(ref(db,"patients/"+id), { [field]: value.trim() });
-window.deletePatient = async (id) => {
-  const s = await get(ref(db,"patients/"+id)); if(!s.exists()) return;
-  const v = s.val();
-  await set(ref(db,"deleted/"+id), v);
-  await remove(ref(db,"patients/"+id));
-  await updateTokenSummary();
-};
-window.restore = async (id) => {
-  const s = await get(ref(db,"deleted/"+id)); if(!s.exists()) return;
-  const v = s.val();
-  await set(ref(db,"patients/"+id), v);
-  await remove(ref(db,"deleted/"+id));
-  await updateTokenSummary();
-};
-window.confirmDelete = async (id) => {
-  if(!confirm("Are you sure you want to permanently delete this record?")) return;
-  await remove(ref(db,"deleted/"+id));
-  await updateTokenSummary();
-};
-window.toggleDeleted = () => {
-  const sec = document.getElementById("deletedSection");
-  sec.style.display = sec.style.display === "none" ? "block" : "none";
-};
+async function restoreDeleted(id){
+  const s=await get(ref(db,"deleted/"+id)); if(!s.exists()) return;
+  await set(ref(db,"patients/"+id),s.val()); await remove(ref(db,"deleted/"+id));
+}
+async function deleteDeleted(id){ if(confirm("Delete permanently?")) await remove(ref(db,"deleted/"+id)); }
+window.restoreDeleted=restoreDeleted; window.deleteDeleted=deleteDeleted;
 
-/* initialize summary once */
-updateTokenSummary();
-
+/* Token Summary */
+onValue(ref(db,"patients"),snap=>{
+  const ids=Object.keys(snap.val()||{}).map(Number).sort((a,b)=>a-b);
+  currentToken.textContent=ids[0]||0;
+  nextToken.textContent=ids[1]||0;
+  remainingTokens.textContent=Math.max(0,ids.length-(ids[0]?1:0));
+});
 </script>
 </body>
 </html>
