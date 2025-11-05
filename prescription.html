@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prescription – Lucknow Health & Skin Care Centre</title>
+<style>
+body{
+  font-family:"Poppins",sans-serif;margin:0;
+  background:linear-gradient(135deg,#e3f2fd,#ffffff);
+  color:#0a2540;min-height:100vh;display:flex;flex-direction:column;align-items:center;
+}
+.container{
+  background:rgba(255,255,255,0.3);
+  border:1px solid rgba(255,255,255,0.6);
+  border-radius:20px;padding:20px;margin-top:30px;width:95%;max-width:650px;
+  backdrop-filter:blur(15px);box-shadow:0 4px 15px rgba(0,153,255,0.2);
+}
+h2{text-align:center;margin:5px 0;color:#255aa1;}
+h3{text-align:center;margin:5px 0;color:#3671b3;}
+input,textarea{
+  width:100%;margin-bottom:10px;padding:8px;border-radius:8px;
+  border:1px solid rgba(255,255,255,0.6);
+  background:rgba(255,255,255,0.5);
+}
+button{
+  border:none;cursor:pointer;border-radius:12px;padding:10px 20px;
+  background:rgba(255,255,255,0.3);
+  border:1px solid rgba(255,255,255,0.6);
+  backdrop-filter:blur(10px);
+  color:#0a2540;font-weight:500;margin:5px;
+  box-shadow:0 4px 12px rgba(0,153,255,0.2);
+}
+button:hover{transform:scale(1.05);box-shadow:0 6px 20px rgba(0,153,255,0.35);}
+.medicine-row{display:flex;gap:6px;margin-bottom:6px;}
+.medicine-row input{flex:1;}
+table{width:100%;border-collapse:collapse;margin-top:15px;font-size:0.9rem;}
+th,td{border-bottom:1px solid rgba(0,0,0,0.1);padding:6px;text-align:left;}
+th{background:rgba(255,255,255,0.5);}
+footer{margin-top:auto;width:100%;text-align:center;padding:10px 0;
+  font-size:0.9rem;color:#fff;background:linear-gradient(to right,#79b6f3,#a8d1ff);}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Lucknow Health & Skin Care Centre</h2>
+  <h3>Prescription by Dr. Suhaib Ahmad Ansari</h3>
+  <input id="pName" placeholder="Patient Name" readonly>
+  <input id="pMobile" placeholder="Mobile" readonly>
+  <input id="pAge" placeholder="Age" readonly>
+  <input id="pDate" type="date">
+  <input id="invoiceNum" readonly placeholder="Invoice #">
+  <textarea id="diagnosis" placeholder="Diagnosis"></textarea>
+
+  <div id="medicineList">
+    <div class="medicine-row">
+      <input placeholder="Medicine">
+      <input placeholder="Dose" style="width:100px;">
+      <input placeholder="Days" style="width:80px;">
+    </div>
+  </div>
+  <button onclick="addMedicine()">+ Add Medicine</button>
+
+  <textarea id="advice" placeholder="Advice / Notes"></textarea>
+  <div style="text-align:center;">
+    <button onclick="savePrescription()">💾 Save</button>
+    <button onclick="printPrescription()">🖨️ Print</button>
+    <button onclick="shareWhatsApp()">📱 Share</button>
+  </div>
+
+  <div id="oldPrescriptions">
+    <h3 style="margin-top:20px;">📜 Old Prescriptions</h3>
+    <table id="oldPresTable">
+      <thead><tr><th>Invoice</th><th>Date</th><th>Actions</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<footer>© 2025 Lucknow Health & Skin Care Centre</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyCJU3NHqAGbiZpNIDTLaEDxW4gblkCs7DQ",
+  authDomain:"clinic-token-system-e1430.firebaseapp.com",
+  databaseURL:"https://clinic-token-system-e1430-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"clinic-token-system-e1430",
+  storageBucket:"clinic-token-system-e1430.appspot.com",
+  messagingSenderId:"1014958043227",
+  appId:"1:1014958043227:web:c5a33675ddf76572274f7e"
+});
+const db = getDatabase(app);
+
+/* ---------- Get Patient ID from URL ---------- */
+const urlParams = new URLSearchParams(window.location.search);
+const patientId = urlParams.get('patient');
+let patientData = {};
+
+/* ---------- Load Patient Info ---------- */
+if (patientId) {
+  const snap = await get(ref(db, "patients/" + patientId));
+  if (snap.exists()) {
+    patientData = snap.val();
+    pName.value = patientData.name || "";
+    pMobile.value = patientData.mobile || "";
+    pAge.value = patientData.age || "";
+  }
+}
+
+/* ---------- Defaults ---------- */
+pDate.value = new Date().toISOString().split("T")[0];
+invoiceNum.value = "INV-" + Date.now();
+
+/* ---------- Add Medicine ---------- */
+window.addMedicine = function() {
+  const div = document.createElement("div");
+  div.className = "medicine-row";
+  div.innerHTML = `<input placeholder="Medicine"><input placeholder="Dose" style="width:100px;"><input placeholder="Days" style="width:80px;">`;
+  medicineList.appendChild(div);
+};
+
+/* ---------- Save Prescription ---------- */
+window.savePrescription = async function() {
+  if (!patientId) return alert("No patient ID");
+  const meds = [...document.querySelectorAll("#medicineList .medicine-row")].map(r => {
+    const i = r.querySelectorAll("input");
+    return {name:i[0].value, dose:i[1].value, days:i[2].value};
+  });
+  const presData = {
+    date: pDate.value,
+    diagnosis: diagnosis.value,
+    advice: advice.value,
+    medicines: meds
+  };
+  const inv = invoiceNum.value;
+  await set(ref(db, `patients/${patientId}/prescriptions/${inv}`), presData);
+  alert("Prescription saved ✅");
+  loadOldPrescriptions();
+};
+
+/* ---------- Print ---------- */
+window.printPrescription = function() {
+  window.print();
+};
+
+/* ---------- WhatsApp Share ---------- */
+window.shareWhatsApp = function() {
+  const msg = `Prescription for ${pName.value}%0AInvoice: ${invoiceNum.value}%0ADate: ${pDate.value}%0AClinic: Lucknow Health And Skin Care Centre%0ADiagnosis: ${diagnosis.value}`;
+  window.open(`https://api.whatsapp.com/send?text=${msg}`, "_blank");
+};
+
+/* ---------- Load Old Prescriptions ---------- */
+async function loadOldPrescriptions() {
+  if (!patientId) return;
+  const snap = await get(ref(db, `patients/${patientId}/prescriptions`));
+  const tableBody = document.querySelector("#oldPresTable tbody");
+  tableBody.innerHTML = "";
+  if (!snap.exists()) {
+    tableBody.innerHTML = `<tr><td colspan='3'>No old prescriptions found.</td></tr>`;
+    return;
+  }
+  const data = snap.val();
+  Object.entries(data).reverse().forEach(([inv, p]) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${inv}</td>
+      <td>${p.date || ''}</td>
+      <td>
+        <button onclick="viewPrescription('${inv}')">View</button>
+        <button onclick="shareOldWhatsApp('${inv}','${p.date || ''}')">📱</button>
+      </td>`;
+    tableBody.appendChild(row);
+  });
+}
+
+/* ---------- View Old Prescription ---------- */
+window.viewPrescription = async function(inv) {
+  const snap = await get(ref(db, `patients/${patientId}/prescriptions/${inv}`));
+  if (!snap.exists()) return alert("Not found");
+  const p = snap.val();
+  alert(`Invoice: ${inv}\nDate: ${p.date}\nDiagnosis: ${p.diagnosis}\nAdvice: ${p.advice}`);
+};
+
+/* ---------- Share Old via WhatsApp ---------- */
+window.shareOldWhatsApp = function(inv, date) {
+  const msg = `Prescription ${inv} (${date}) for ${pName.value} - Lucknow Health And Skin Care Centre`;
+  window.open(`https://api.whatsapp.com/send?text=${msg}`, "_blank");
+};
+
+loadOldPrescriptions();
+</script>
+</body>
+</html>
